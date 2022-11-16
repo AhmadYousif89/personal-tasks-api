@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  nest-dev: # dev container
+    image: postgres:latest
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: ayob
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: nest
+  nest-test: # test container
+    image: postgres:latest
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: ayob
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: nest
