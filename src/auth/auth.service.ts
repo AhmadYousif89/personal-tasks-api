@@ -11,16 +11,18 @@ import { Tokens } from './types';
 
 @Injectable()
 export class AuthServices {
+  private timeToExpire = 24 * 60 * 60 * 1000; // (1 Day)
+
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService,
     private config: ConfigService,
+    private jwt: JwtService,
   ) {}
 
   async register(dto: AuthRegisterDto, res: Response) {
     try {
-      const name = this.trim(dto.name);
-      const email = this.trim(dto.email);
+      const name = dto.name.trim();
+      const email = dto.email.trim();
       const isPassValid = /^((?!.*[\s])(?=.*\d).{3,})/.test(dto.password);
 
       if (!isPassValid) {
@@ -29,8 +31,8 @@ export class AuthServices {
           HttpStatus.BAD_REQUEST,
         );
       }
-      const hash = await argon.hash(dto.password);
 
+      const hash = await argon.hash(dto.password);
       const data = { name, email, hash };
       const user = await this.prisma.user.create({ data });
 
@@ -41,21 +43,13 @@ export class AuthServices {
       });
       await this.updateRt(user.id, tokens.refreshToken);
 
-      return res
-        .cookie('jwt', tokens.refreshToken, {
-          secure: true, // to be change in production
-          httpOnly: true,
-          sameSite: 'none',
-          maxAge: 5 * 60 * 1000,
-        })
-        .json({ aT: tokens.accessToken });
+      this.attachCookie(res, tokens.refreshToken);
+      return res.json({ message: 'user created' });
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
-        if (err.code === 'P2002')
-          throw new HttpException(
-            'Credentials already exist',
-            HttpStatus.FORBIDDEN,
-          );
+        if (err.code === 'P2002') {
+          throw new HttpException('Email already exist', HttpStatus.CONFLICT);
+        }
       }
       throw err;
     }
@@ -67,7 +61,10 @@ export class AuthServices {
         where: { email: dto.email },
       });
       if (!user) {
-        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+        throw new HttpException(
+          'Email not registered',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
       const isPwValid = await argon.verify(user.hash, dto.password);
@@ -83,15 +80,8 @@ export class AuthServices {
 
       await this.updateRt(user.id, tokens.refreshToken);
 
-      return res
-        .cookie('jwt', tokens.refreshToken, {
-          secure: false, // to be change in production
-          httpOnly: true,
-          sameSite: 'none',
-          maxAge: 2 * 60 * 1000,
-          // domain: 'http://localhost:5173',
-        })
-        .json({ aT: tokens.accessToken });
+      this.attachCookie(res, tokens.refreshToken);
+      return res.json({ message: 'user logged in' });
     } catch (err) {
       throw err;
     }
@@ -100,8 +90,7 @@ export class AuthServices {
   async refreshToken(id: string, jwt: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
-      if (!user)
-        throw new HttpException('Invalid credentials', HttpStatus.FORBIDDEN);
+      if (!user) throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
       // stored RT was deleted
       if (!user.rT)
         throw new HttpException(
@@ -128,6 +117,27 @@ export class AuthServices {
     }
   }
 
+  async resetPassword(dto: AuthLoginDto) {
+    try {
+      const email = dto.email.trim();
+      const password = dto.password.trim();
+
+      const user = await this.prisma.user.findUnique({ where: { email } });
+      if (!user)
+        throw new HttpException('Email not registered', HttpStatus.NOT_FOUND);
+
+      const newHash = await argon.hash(password);
+      await this.prisma.user.update({
+        where: { email },
+        data: { hash: newHash },
+      });
+
+      return { message: 'password updated' };
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async logout(id: string, jwt: string, res: Response) {
     try {
       if (!jwt) return res.status(HttpStatus.NO_CONTENT).send();
@@ -146,12 +156,12 @@ export class AuthServices {
 
       return res
         .clearCookie('jwt', {
-          secure: true,
+          secure: process.env.NODE_ENV === 'production',
           httpOnly: true,
           sameSite: 'none',
         })
         .status(HttpStatus.OK)
-        .json({ message: 'Cookie cleared' });
+        .json({ message: 'cookie cleared' });
     } catch (err) {
       throw err;
     }
@@ -165,6 +175,15 @@ export class AuthServices {
     });
   }
 
+  private attachCookie(res: Response, token: string) {
+    res.cookie('jwt', token, {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'none',
+      maxAge: this.timeToExpire,
+    });
+  }
+
   private async generateTokens(user: {
     id: string;
     name: string;
@@ -172,11 +191,11 @@ export class AuthServices {
   }): Promise<Tokens> {
     const [at, rt] = await Promise.all([
       this.jwt.signAsync(user, {
-        expiresIn: '30s',
+        expiresIn: '1m',
         secret: this.config.get('ACCESS_SECRET_TOKEN'),
       }),
       this.jwt.signAsync(user, {
-        expiresIn: '2m',
+        expiresIn: '1d',
         secret: this.config.get('REFRESH_SECRET_TOKEN'),
       }),
     ]);
@@ -184,9 +203,5 @@ export class AuthServices {
       accessToken: at,
       refreshToken: rt,
     };
-  }
-
-  private trim(text: string) {
-    return text?.trim();
   }
 }

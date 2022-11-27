@@ -5,7 +5,7 @@ export class EditUserDto {
   @IsOptional()
   name: string;
 
-  @IsEmail()
+  @IsString()
   @IsOptional()
   email: string;
 

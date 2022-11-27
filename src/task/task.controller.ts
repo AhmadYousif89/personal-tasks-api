@@ -1,11 +1,11 @@
 import {
-  Body,
-  Controller,
-  Delete,
   Get,
+  Post,
+  Body,
   Param,
   Patch,
-  Post,
+  Delete,
+  Controller,
 } from '@nestjs/common';
 import { GetUserId, Protected } from '../common/decorators';
 import { EditTaskDto, TaskDto } from './dto';

@@ -7,9 +7,8 @@ import {
   HttpStatus,
   UseGuards,
   Controller,
-  Req,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Cookies } from './../common/decorators';
 
 import { GetUserId, Protected } from './../common/decorators';
@@ -34,11 +33,16 @@ export class AuthController {
   }
 
   @Get('refresh')
-  // @UseGuards(RtAuthGuard)
+  @UseGuards(RtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async refreshToken(@GetUserId() id: string, @Cookies('jwt') jwt: string) {
-    console.log({ jwt });
     return this.authServices.refreshToken(id, jwt);
+  }
+
+  @Post('reset')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: AuthLoginDto) {
+    return this.authServices.resetPassword(dto);
   }
 
   @Protected()

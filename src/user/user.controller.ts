@@ -9,14 +9,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  allUsers() {
-    return this.userService.getUsers();
+  getAllUsers() {
+    return this.userService.getAllUsers();
   }
 
   @Protected()
   @Get('me')
-  getUser(@GetUserId() id: string) {
-    return this.userService.getUser(id);
+  getCurrentUser(@GetUserId() id: string) {
+    return this.userService.getCurrentUser(id);
   }
 
   @Protected()

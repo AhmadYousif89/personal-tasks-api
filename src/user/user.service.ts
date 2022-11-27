@@ -9,7 +9,7 @@ import { EditUserDto } from './dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getUsers() {
+  async getAllUsers() {
     try {
       const users = await this.prisma.user.findMany({});
       if (users.length === 0)
@@ -25,7 +25,7 @@ export class UserService {
     }
   }
 
-  async getUser(id: string) {
+  async getCurrentUser(id: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
 
@@ -47,36 +47,43 @@ export class UserService {
   async updateUser(id: string, dto: EditUserDto) {
     const { name, email, password } = dto;
     try {
+      if (!name && !email && !password) return { update: 0 };
       const user = await this.prisma.user.findUnique({ where: { id } });
 
-      if (!user)
-        throw new HttpException(
-          'Invalid user credentials',
-          HttpStatus.FORBIDDEN,
-        );
-
-      const isPassValid = /^((?!.*[\s])(?=.*\d).{3,})/.test(dto.password);
-
+      if (!user) {
+        throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+      }
+      const isPassValid = /^((?!.*[\s])(?=.*\d).{3,})/.test(password);
       if (password && !isPassValid) {
         throw new HttpException(
-          'password must be at least 3 characters with 1 number and no spaces',
+          'required 3 characters at least with numbers and no spaces',
           HttpStatus.BAD_REQUEST,
         );
       }
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (email && !isEmailValid) {
+        throw new HttpException('email not valid', HttpStatus.BAD_REQUEST);
+      }
 
-      let hash: string;
       let updatedUser: User;
+      const newHash = await argon.hash(password);
 
-      if (!password || password.trim().length === 0) {
+      if (name) {
         updatedUser = await this.prisma.user.update({
           where: { id: user.id },
-          data: { name, email },
+          data: { name },
         });
-      } else {
-        hash = await argon.hash(password);
+      }
+      if (email) {
         updatedUser = await this.prisma.user.update({
           where: { id: user.id },
-          data: { name, email, hash },
+          data: { email },
+        });
+      }
+      if (password) {
+        updatedUser = await this.prisma.user.update({
+          where: { id: user.id },
+          data: { hash: newHash },
         });
       }
       this.deleteUserHash(updatedUser);
@@ -90,15 +97,11 @@ export class UserService {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
 
-      if (!user)
-        throw new HttpException(
-          'Invalid user credentials',
-          HttpStatus.FORBIDDEN,
-        );
+      if (!user) throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 
       await this.prisma.user.delete({ where: { id: user.id } });
 
-      return { success: true, message: 'User deleted' };
+      return { success: 1, message: 'User deleted' };
     } catch (err) {
       throw err;
     }

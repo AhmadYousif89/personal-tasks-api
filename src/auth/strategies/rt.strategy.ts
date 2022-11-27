@@ -16,10 +16,8 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   }
 
   private static getJwtFromCookie(req: Request): string {
-    console.log(req.cookies);
     if (req.cookies && 'jwt' in req.cookies) return req.cookies.jwt;
-    if (!('jwt' in req.cookies))
-      throw new HttpException('Access Forbidden', 403);
+    else throw new HttpException('Access Forbidden', 403);
   }
 
   validate(payload: JwtPayload) {
