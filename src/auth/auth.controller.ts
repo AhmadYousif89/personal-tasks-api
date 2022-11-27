@@ -2,7 +2,6 @@ import {
   Get,
   Res,
   Post,
-  Body,
   HttpCode,
   HttpStatus,
   UseGuards,
@@ -11,25 +10,31 @@ import {
 import { Response } from 'express';
 import { Cookies } from './../common/decorators';
 
-import { GetUserId, Protected } from './../common/decorators';
+import { GetUserId, Protected, ValidateBody } from './../common/decorators';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
 import { RtAuthGuard } from './../common/guards';
 import { AuthServices } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+  private timeToExpire = 24 * 60 * 60 * 1000; // (1 Day)
+
   constructor(private readonly authServices: AuthServices) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() dto: AuthRegisterDto, @Res() res: Response) {
-    await this.authServices.register(dto, res);
+  async register(@ValidateBody() dto: AuthRegisterDto, @Res() res: Response) {
+    const { accessToken, refreshToken } = await this.authServices.register(dto);
+    this.attachCookie(res, refreshToken);
+    return res.json({ accessToken });
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: AuthLoginDto, @Res() res: Response) {
-    await this.authServices.login(dto, res);
+  async login(@ValidateBody() dto: AuthLoginDto, @Res() res: Response) {
+    const { accessToken, refreshToken } = await this.authServices.login(dto);
+    this.attachCookie(res, refreshToken);
+    return res.json({ accessToken });
   }
 
   @Get('refresh')
@@ -41,7 +46,7 @@ export class AuthController {
 
   @Post('reset')
   @HttpCode(HttpStatus.OK)
-  async resetPassword(@Body() dto: AuthLoginDto) {
+  async resetPassword(@ValidateBody() dto: AuthLoginDto) {
     return this.authServices.resetPassword(dto);
   }
 
@@ -53,5 +58,14 @@ export class AuthController {
     @Cookies('jwt') jwt: string,
   ) {
     await this.authServices.logout(id, jwt, res);
+  }
+
+  private attachCookie(res: Response, token: string) {
+    res.cookie('jwt', token, {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'none',
+      maxAge: this.timeToExpire,
+    });
   }
 }

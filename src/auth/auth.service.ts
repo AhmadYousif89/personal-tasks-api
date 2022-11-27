@@ -1,4 +1,3 @@
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -19,20 +18,16 @@ export class AuthServices {
     private jwt: JwtService,
   ) {}
 
-  async register(dto: AuthRegisterDto, res: Response) {
+  async register(dto: AuthRegisterDto) {
     try {
-      const name = dto.name.trim();
-      const email = dto.email.trim();
-      const isPassValid = /^((?!.*[\s])(?=.*\d).{3,})/.test(dto.password);
+      const { name, email, password } = dto;
 
-      if (!isPassValid) {
-        throw new HttpException(
-          'password must be at least 3 characters with 1 number and no spaces',
-          HttpStatus.BAD_REQUEST,
-        );
+      const exUser = await this.prisma.user.findUnique({ where: { email } });
+      if (exUser) {
+        throw new HttpException('Email already exist', HttpStatus.CONFLICT);
       }
 
-      const hash = await argon.hash(dto.password);
+      const hash = await argon.hash(password);
       const data = { name, email, hash };
       const user = await this.prisma.user.create({ data });
 
@@ -42,20 +37,13 @@ export class AuthServices {
         email: user.email,
       });
       await this.updateRt(user.id, tokens.refreshToken);
-
-      this.attachCookie(res, tokens.refreshToken);
-      return res.json({ message: 'user created' });
+      return tokens;
     } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError) {
-        if (err.code === 'P2002') {
-          throw new HttpException('Email already exist', HttpStatus.CONFLICT);
-        }
-      }
       throw err;
     }
   }
 
-  async login(dto: AuthLoginDto, res: Response) {
+  async login(dto: AuthLoginDto) {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email: dto.email },
@@ -79,9 +67,7 @@ export class AuthServices {
       });
 
       await this.updateRt(user.id, tokens.refreshToken);
-
-      this.attachCookie(res, tokens.refreshToken);
-      return res.json({ message: 'user logged in' });
+      return tokens;
     } catch (err) {
       throw err;
     }
@@ -105,13 +91,13 @@ export class AuthServices {
           HttpStatus.FORBIDDEN,
         );
       // send new access token
-      const tokens = await this.generateTokens({
+      const { accessToken } = await this.generateTokens({
         id: user.id,
         name: user.name,
         email: user.email,
       });
 
-      return { aT: tokens.accessToken };
+      return { accessToken };
     } catch (err) {
       throw err;
     }
@@ -119,8 +105,7 @@ export class AuthServices {
 
   async resetPassword(dto: AuthLoginDto) {
     try {
-      const email = dto.email.trim();
-      const password = dto.password.trim();
+      const { email, password } = dto;
 
       const user = await this.prisma.user.findUnique({ where: { email } });
       if (!user)
@@ -167,8 +152,8 @@ export class AuthServices {
     }
   }
 
-  private async updateRt(userId: string, rt: string) {
-    const hashedRt = await argon.hash(rt);
+  private async updateRt(userId: string, refreshToken: string) {
+    const hashedRt = await argon.hash(refreshToken);
     await this.prisma.user.update({
       where: { id: userId },
       data: { rT: hashedRt },
@@ -189,7 +174,7 @@ export class AuthServices {
     name: string;
     email: string;
   }): Promise<Tokens> {
-    const [at, rt] = await Promise.all([
+    const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(user, {
         expiresIn: '1m',
         secret: this.config.get('ACCESS_SECRET_TOKEN'),
@@ -199,9 +184,6 @@ export class AuthServices {
         secret: this.config.get('REFRESH_SECRET_TOKEN'),
       }),
     ]);
-    return {
-      accessToken: at,
-      refreshToken: rt,
-    };
+    return { accessToken, refreshToken };
   }
 }

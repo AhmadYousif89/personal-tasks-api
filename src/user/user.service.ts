@@ -25,7 +25,7 @@ export class UserService {
     }
   }
 
-  async getCurrentUser(id: string) {
+  async getUserById(id: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
 
@@ -44,15 +44,16 @@ export class UserService {
     }
   }
 
-  async updateUser(id: string, dto: EditUserDto) {
+  async updateUserById(id: string, dto: EditUserDto) {
     const { name, email, password } = dto;
     try {
-      if (!name && !email && !password) return { update: 0 };
+      if (!name && !email && !password) return {};
       const user = await this.prisma.user.findUnique({ where: { id } });
 
       if (!user) {
-        throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+        throw new HttpException('Access denied', HttpStatus.NOT_FOUND);
       }
+
       const isPassValid = /^((?!.*[\s])(?=.*\d).{3,})/.test(password);
       if (password && !isPassValid) {
         throw new HttpException(
@@ -66,7 +67,6 @@ export class UserService {
       }
 
       let updatedUser: User;
-      const newHash = await argon.hash(password);
 
       if (name) {
         updatedUser = await this.prisma.user.update({
@@ -81,11 +81,13 @@ export class UserService {
         });
       }
       if (password) {
+        const newHash = await argon.hash(password);
         updatedUser = await this.prisma.user.update({
           where: { id: user.id },
           data: { hash: newHash },
         });
       }
+
       this.deleteUserHash(updatedUser);
       return updatedUser;
     } catch (err) {
@@ -93,7 +95,7 @@ export class UserService {
     }
   }
 
-  async deleteUser(id: string) {
+  async deleteUserById(id: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
 
