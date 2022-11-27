@@ -10,8 +10,6 @@ import { Tokens } from './types';
 
 @Injectable()
 export class AuthServices {
-  private timeToExpire = 24 * 60 * 60 * 1000; // (1 Day)
-
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,
@@ -157,15 +155,6 @@ export class AuthServices {
     await this.prisma.user.update({
       where: { id: userId },
       data: { rT: hashedRt },
-    });
-  }
-
-  private attachCookie(res: Response, token: string) {
-    res.cookie('jwt', token, {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      sameSite: 'none',
-      maxAge: this.timeToExpire,
     });
   }
 
