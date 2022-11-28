@@ -24,17 +24,17 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@ValidateBody() dto: AuthRegisterDto, @Res() res: Response) {
-    const { accessToken, refreshToken } = await this.authServices.register(dto);
+    const { user, refreshToken } = await this.authServices.register(dto);
     this.attachCookie(res, refreshToken);
-    return res.json({ accessToken });
+    return res.json(user);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@ValidateBody() dto: AuthLoginDto, @Res() res: Response) {
-    const { accessToken, refreshToken } = await this.authServices.login(dto);
+    const { user, refreshToken } = await this.authServices.login(dto);
     this.attachCookie(res, refreshToken);
-    return res.json({ accessToken });
+    return res.json(user);
   }
 
   @Get('refresh')

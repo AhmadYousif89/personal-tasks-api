@@ -4,13 +4,13 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { AuthRegisterDto } from 'src/auth/dto';
 
+type KeyBody = 'name' | 'email' | 'password';
 export const ValidateBody = createParamDecorator(
   (key: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const body = request.body;
-    const newBody: Partial<AuthRegisterDto> = {};
+    let newBody: Record<KeyBody, string>;
     for (const key of Object.keys(body)) {
       newBody[key] = body[key].trim();
     }

@@ -7,6 +7,7 @@ import * as argon from 'argon2';
 import { PrismaService } from './../prisma/prisma.service';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
 import { Tokens } from './types';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthServices {
@@ -29,13 +30,15 @@ export class AuthServices {
       const data = { name, email, hash };
       const user = await this.prisma.user.create({ data });
 
-      const tokens = await this.generateTokens({
+      const { refreshToken } = await this.generateTokens({
         id: user.id,
         name: user.name,
         email: user.email,
       });
-      await this.updateRt(user.id, tokens.refreshToken);
-      return tokens;
+
+      await this.updateRt(user.id, refreshToken);
+      this.deleteUserHash(user);
+      return { user, refreshToken };
     } catch (err) {
       throw err;
     }
@@ -58,14 +61,15 @@ export class AuthServices {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
 
-      const tokens = await this.generateTokens({
+      const { refreshToken } = await this.generateTokens({
         id: user.id,
         name: user.name,
         email: user.email,
       });
 
-      await this.updateRt(user.id, tokens.refreshToken);
-      return tokens;
+      await this.updateRt(user.id, refreshToken);
+      this.deleteUserHash(user);
+      return { user, refreshToken };
     } catch (err) {
       throw err;
     }
@@ -174,5 +178,10 @@ export class AuthServices {
       }),
     ]);
     return { accessToken, refreshToken };
+  }
+
+  private deleteUserHash(user: User) {
+    delete user.hash;
+    delete user.rT;
   }
 }
