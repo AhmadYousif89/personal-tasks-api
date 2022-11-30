@@ -2,6 +2,7 @@ import {
   Get,
   Res,
   Post,
+  Body,
   HttpCode,
   HttpStatus,
   UseGuards,
@@ -10,7 +11,7 @@ import {
 import { Response } from 'express';
 import { Cookies } from './../common/decorators';
 
-import { GetUserId, Protected, ValidateBody } from './../common/decorators';
+import { GetUserId, Protected } from './../common/decorators';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
 import { RtAuthGuard } from './../common/guards';
 import { AuthServices } from './auth.service';
@@ -23,7 +24,7 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@ValidateBody() dto: AuthRegisterDto, @Res() res: Response) {
+  async register(@Body() dto: AuthRegisterDto, @Res() res: Response) {
     const { user, refreshToken } = await this.authServices.register(dto);
     this.attachCookie(res, refreshToken);
     return res.json(user);
@@ -31,7 +32,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@ValidateBody() dto: AuthLoginDto, @Res() res: Response) {
+  async login(@Body() dto: AuthLoginDto, @Res() res: Response) {
     const { user, refreshToken } = await this.authServices.login(dto);
     this.attachCookie(res, refreshToken);
     return res.json(user);
@@ -46,7 +47,7 @@ export class AuthController {
 
   @Post('reset')
   @HttpCode(HttpStatus.OK)
-  async resetPassword(@ValidateBody() dto: AuthLoginDto) {
+  async resetPassword(@Body() dto: AuthLoginDto) {
     return this.authServices.resetPassword(dto);
   }
 

@@ -21,11 +21,6 @@ export class AuthServices {
     try {
       const { name, email, password } = dto;
 
-      const exUser = await this.prisma.user.findUnique({ where: { email } });
-      if (exUser) {
-        throw new HttpException('Email already exist', HttpStatus.CONFLICT);
-      }
-
       const hash = await argon.hash(password);
       const data = { name, email, hash };
       const user = await this.prisma.user.create({ data });
@@ -46,17 +41,10 @@ export class AuthServices {
 
   async login(dto: AuthLoginDto) {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { email: dto.email },
-      });
-      if (!user) {
-        throw new HttpException(
-          'Email not registered',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
+      const { email, password } = dto;
+      const user = await this.prisma.user.findUnique({ where: { email } });
 
-      const isPwValid = await argon.verify(user.hash, dto.password);
+      const isPwValid = await argon.verify(user.hash, password);
       if (!isPwValid) {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }

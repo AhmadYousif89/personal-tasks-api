@@ -7,6 +7,7 @@ import { AppModule } from './../src/app.module';
 import { AuthRegisterDto } from './../src/auth/dto';
 import { EditUserDto } from './../src/user/dto';
 import { EditTaskDto, TaskDto } from 'src/task/dto';
+import { useContainer } from 'class-validator';
 
 describe('\nTesting App e2e\n---------------------------', () => {
   let app: INestApplication;
@@ -20,6 +21,7 @@ describe('\nTesting App e2e\n---------------------------', () => {
     app = appModuleRef
       .createNestApplication()
       .useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.init();
     await app.listen(4000);
 

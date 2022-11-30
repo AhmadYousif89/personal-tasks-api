@@ -1,6 +1,6 @@
-import { Controller, Delete, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch } from '@nestjs/common';
 
-import { GetUserId, Protected, ValidateBody } from './../common/decorators';
+import { GetUserId, Protected } from './../common/decorators';
 import { UserService } from './user.service';
 import { EditUserDto } from './dto';
 
@@ -21,8 +21,8 @@ export class UserController {
 
   @Protected()
   @Patch('me')
-  updateUserById(@GetUserId() id: string, @ValidateBody() data: EditUserDto) {
-    return this.userService.updateUserById(id, data);
+  updateUserById(@GetUserId() id: string, @Body() dto: EditUserDto) {
+    return this.userService.updateUserById(id, dto);
   }
 
   @Protected()

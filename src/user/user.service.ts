@@ -29,11 +29,7 @@ export class UserService {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
 
-      if (!user)
-        throw new HttpException(
-          'Invalid user credentials',
-          HttpStatus.FORBIDDEN,
-        );
+      if (!user) throw new HttpException('Access denied', HttpStatus.NOT_FOUND);
       if (user && !user.rT)
         throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
 
@@ -46,45 +42,25 @@ export class UserService {
 
   async updateUserById(id: string, dto: EditUserDto) {
     const { name, email, password } = dto;
-    try {
-      if (!name && !email && !password) return {};
-      const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!name && !email && !password) return {};
 
+    try {
+      const user = await this.prisma.user.findUnique({ where: { id } });
       if (!user) {
         throw new HttpException('Access denied', HttpStatus.NOT_FOUND);
       }
 
-      const isPassValid = /^((?!.*[\s])(?=.*\d).{3,})/.test(password);
-      if (password && !isPassValid) {
-        throw new HttpException(
-          'required 3 characters at least with numbers and no spaces',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      if (email && !isEmailValid) {
-        throw new HttpException('email not valid', HttpStatus.BAD_REQUEST);
-      }
-
       let updatedUser: User;
-
-      if (name) {
-        updatedUser = await this.prisma.user.update({
-          where: { id: user.id },
-          data: { name },
-        });
-      }
-      if (email) {
-        updatedUser = await this.prisma.user.update({
-          where: { id: user.id },
-          data: { email },
-        });
-      }
       if (password) {
         const newHash = await argon.hash(password);
         updatedUser = await this.prisma.user.update({
           where: { id: user.id },
-          data: { hash: newHash },
+          data: { name, email, hash: newHash },
+        });
+      } else {
+        updatedUser = await this.prisma.user.update({
+          where: { id: user.id },
+          data: { name, email },
         });
       }
 
@@ -103,7 +79,7 @@ export class UserService {
 
       await this.prisma.user.delete({ where: { id: user.id } });
 
-      return { success: 1, message: 'User deleted' };
+      return { message: 'User deleted' };
     } catch (err) {
       throw err;
     }
