@@ -1,11 +1,20 @@
 {
   "version": 2,
   "name": "tasks-api",
+  "buildCommand": "npm start",
+  "installCommand": "npm install",
   "regions": ["fra1"],
   "builds": [
     {
       "src": "dist/main.js",
       "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/main.js",
+      "methods": ["GET", "POST", "PUT", "DELETE"]
     }
   ],
   "headers": [
