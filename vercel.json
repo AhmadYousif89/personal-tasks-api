@@ -1,8 +1,6 @@
 {
   "version": 2,
   "name": "tasks-api",
-  "buildCommand": "npm start",
-  "installCommand": "npm install",
   "regions": ["fra1"],
   "builds": [
     {
