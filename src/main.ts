@@ -13,7 +13,7 @@ async function bootstrap() {
   app.enableCors(corsOptions);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  await app.listen(process.env.PORT || 5000);
+  await app.listen(process.env.PORT || 8520);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
