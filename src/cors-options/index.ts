@@ -12,8 +12,6 @@ export const corsOptions: CorsOptions = {
       return cb(new Error('Not allowed by CORS'));
     }
   },
-  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-  methods: '*',
   credentials: true,
   optionsSuccessStatus: 200,
 };
