@@ -66,8 +66,7 @@ export class AuthServices {
   async refreshToken(id: string, jwt: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
-      // user was deleted
-      if (!user) throw new HttpException('Access denied', HttpStatus.NOT_FOUND);
+      if (!user) throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
       // stored RT was deleted
       if (!user.rT)
         throw new HttpException(
