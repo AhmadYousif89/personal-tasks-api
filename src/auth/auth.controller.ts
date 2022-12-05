@@ -63,7 +63,7 @@ export class AuthController {
 
   private attachCookie(res: Response, token: string) {
     res.cookie('jwt', token, {
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       httpOnly: true,
       sameSite: 'none',
       maxAge: this.timeToExpire,
