@@ -67,7 +67,7 @@ export class AuthServices {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
       if (!user)
-        throw new HttpException('User not found', HttpStatus.FORBIDDEN);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       // stored RT was deleted
       if (!user.rT)
         throw new HttpException(

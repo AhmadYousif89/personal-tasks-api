@@ -65,7 +65,7 @@ let AuthServices = class AuthServices {
         try {
             const user = await this.prisma.user.findUnique({ where: { id } });
             if (!user)
-                throw new common_1.HttpException('User not found', common_1.HttpStatus.FORBIDDEN);
+                throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
             if (!user.rT)
                 throw new common_1.HttpException('Access denied, Deleted RT', common_1.HttpStatus.FORBIDDEN);
             const isRtValid = await argon.verify(user.rT, jwt);
