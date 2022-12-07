@@ -37,7 +37,7 @@ let TaskService = class TaskService {
         try {
             const user = await this.prisma.user.findUnique({ where: { id: userId } });
             if (user && !user.rT)
-                throw new common_1.HttpException('Access denied', common_1.HttpStatus.FORBIDDEN);
+                throw new common_1.HttpException('Access denied, Deleted RT', common_1.HttpStatus.FORBIDDEN);
             const tasks = await this.prisma.task.findMany({
                 where: { userId },
             });

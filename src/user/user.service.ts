@@ -29,9 +29,13 @@ export class UserService {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
 
-      if (!user) throw new HttpException('Access denied', HttpStatus.NOT_FOUND);
+      if (!user)
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       if (user && !user.rT)
-        throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+        throw new HttpException(
+          'Access denied, Deleted RT',
+          HttpStatus.FORBIDDEN,
+        );
 
       this.deleteUserHash(user);
       return user;
@@ -47,7 +51,7 @@ export class UserService {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
       if (!user) {
-        throw new HttpException('Access denied', HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
       let updatedUser: User;
