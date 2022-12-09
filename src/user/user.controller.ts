@@ -22,6 +22,7 @@ export class UserController {
   @Protected()
   @Patch('me')
   updateUserById(@GetUserId() id: string, @Body() dto: EditUserDto) {
+    console.log(dto.image);
     return this.userService.updateUserById(id, dto);
   }
 
