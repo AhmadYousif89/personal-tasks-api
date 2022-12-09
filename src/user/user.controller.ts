@@ -26,6 +26,12 @@ export class UserController {
   }
 
   @Protected()
+  @Patch('me')
+  updateUserImage(@GetUserId() id: string, @Body() image: string) {
+    return this.userService.updateUserImage(id, image);
+  }
+
+  @Protected()
   @Delete('me')
   deleteUserById(@GetUserId() id: string) {
     return this.userService.deleteUserById(id);

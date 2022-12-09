@@ -7,6 +7,7 @@ export declare class UserService {
     getAllUsers(): Promise<User[]>;
     getUserById(id: string): Promise<User>;
     updateUserById(id: string, dto: EditUserDto): Promise<{}>;
+    updateUserImage(id: string, image: string): Promise<{}>;
     deleteUserById(id: string): Promise<{
         message: string;
     }>;

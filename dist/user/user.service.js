@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const argon = require("argon2");
+const cloudinary_1 = require("../cloudinary/cloudinary");
 const prisma_service_1 = require("./../prisma/prisma.service");
 let UserService = class UserService {
     constructor(prisma) {
@@ -46,28 +47,58 @@ let UserService = class UserService {
         }
     }
     async updateUserById(id, dto) {
-        const { name, email, password } = dto;
-        if (!name && !email && !password)
+        const { name, email, password, image } = dto;
+        if (!name && !email && !password && !image)
             return {};
         try {
             const user = await this.prisma.user.findUnique({ where: { id } });
             if (!user) {
                 throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
             }
+            if (!image.includes(';base64,'))
+                throw new common_1.HttpException('image is not valid', common_1.HttpStatus.BAD_REQUEST);
+            const imgFlag = user.id.split('-')[0] + '_image';
+            let uploadedImage;
+            if (image) {
+                uploadedImage = await cloudinary_1.default.uploader.upload(image, {
+                    overwrite: true,
+                    public_id: imgFlag,
+                    upload_preset: 'Personal_Tasks',
+                });
+            }
             let updatedUser;
             if (password) {
                 const newHash = await argon.hash(password);
                 updatedUser = await this.prisma.user.update({
                     where: { id: user.id },
-                    data: { name, email, hash: newHash },
+                    data: { name, email, image: uploadedImage.secure_url, hash: newHash },
                 });
             }
             else {
                 updatedUser = await this.prisma.user.update({
                     where: { id: user.id },
-                    data: { name, email },
+                    data: { name, email, image: uploadedImage.secure_url },
                 });
             }
+            this.deleteUserHash(updatedUser);
+            return updatedUser;
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+    async updateUserImage(id, image) {
+        if (!image)
+            return {};
+        try {
+            const user = await this.prisma.user.findUnique({ where: { id } });
+            if (!user) {
+                throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
+            }
+            const updatedUser = await this.prisma.user.update({
+                where: { id: user.id },
+                data: { image },
+            });
             this.deleteUserHash(updatedUser);
             return updatedUser;
         }

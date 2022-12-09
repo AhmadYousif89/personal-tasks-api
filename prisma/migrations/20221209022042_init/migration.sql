@@ -12,6 +12,7 @@ CREATE TABLE "users" (
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "hash" TEXT NOT NULL,
+    "image" TEXT,
     "rT" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")

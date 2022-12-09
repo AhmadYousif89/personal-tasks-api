@@ -11,4 +11,7 @@ export class EditUserDto {
   @IsOptional()
   @Validate(IsPasswordValid)
   password: string;
+  @IsOptional()
+  @IsString()
+  image: string;
 }
