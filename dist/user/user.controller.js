@@ -28,7 +28,6 @@ let UserController = class UserController {
         return this.userService.getUserById(id);
     }
     updateUserById(id, dto) {
-        console.log(dto.image);
         return this.userService.updateUserById(id, dto);
     }
     updateUserImage(id, image) {
