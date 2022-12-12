@@ -25,11 +25,7 @@ export class AuthServices {
       const data = { name, email, hash };
       const user = await this.prisma.user.create({ data });
 
-      const { refreshToken } = await this.generateTokens({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      });
+      const { refreshToken } = await this.generateTokens({ userId: user.id });
 
       await this.updateRt(user.id, refreshToken);
       this.deleteUserHash(user);
@@ -49,11 +45,7 @@ export class AuthServices {
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
 
-      const { refreshToken } = await this.generateTokens({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      });
+      const { refreshToken } = await this.generateTokens({ userId: user.id });
 
       await this.updateRt(user.id, refreshToken);
       this.deleteUserHash(user);
@@ -82,11 +74,7 @@ export class AuthServices {
           HttpStatus.FORBIDDEN,
         );
       // send new access token
-      const { accessToken } = await this.generateTokens({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      });
+      const { accessToken } = await this.generateTokens({ userId: user.id });
 
       return { accessToken };
     } catch (err) {
@@ -151,17 +139,13 @@ export class AuthServices {
     });
   }
 
-  private async generateTokens(user: {
-    id: string;
-    name: string;
-    email: string;
-  }): Promise<Tokens> {
+  private async generateTokens(userId: { userId: string }): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync(user, {
+      this.jwt.signAsync(userId, {
         expiresIn: '1m',
         secret: this.config.get('ACCESS_SECRET_TOKEN'),
       }),
-      this.jwt.signAsync(user, {
+      this.jwt.signAsync(userId, {
         expiresIn: '1d',
         secret: this.config.get('REFRESH_SECRET_TOKEN'),
       }),

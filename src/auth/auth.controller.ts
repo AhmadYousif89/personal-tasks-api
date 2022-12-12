@@ -18,7 +18,7 @@ import { AuthServices } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  private timeToExpire = 12 * 60 * 60 * 1000; // (1/2 Day)
+  private timeToExpire = 24 * 60 * 60 * 1000; // (1 Day)
 
   constructor(private readonly authServices: AuthServices) {}
 

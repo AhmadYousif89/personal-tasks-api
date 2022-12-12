@@ -22,7 +22,7 @@ const auth_service_1 = require("./auth.service");
 let AuthController = class AuthController {
     constructor(authServices) {
         this.authServices = authServices;
-        this.timeToExpire = 12 * 60 * 60 * 1000;
+        this.timeToExpire = 24 * 60 * 60 * 1000;
     }
     async register(dto, res) {
         const { user, refreshToken } = await this.authServices.register(dto);
