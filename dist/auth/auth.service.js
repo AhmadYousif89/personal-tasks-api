@@ -27,7 +27,7 @@ let AuthServices = class AuthServices {
             const hash = await argon.hash(password);
             const data = { name, email, hash };
             const user = await this.prisma.user.create({ data });
-            const { refreshToken } = await this.generateTokens({ userId: user.id });
+            const { refreshToken } = await this.generateTokens({ id: user.id });
             await this.updateRt(user.id, refreshToken);
             this.deleteUserHash(user);
             return { user, refreshToken };
@@ -44,7 +44,7 @@ let AuthServices = class AuthServices {
             if (!isPwValid) {
                 throw new common_1.HttpException('Invalid credentials', common_1.HttpStatus.UNAUTHORIZED);
             }
-            const { refreshToken } = await this.generateTokens({ userId: user.id });
+            const { refreshToken } = await this.generateTokens({ id: user.id });
             await this.updateRt(user.id, refreshToken);
             this.deleteUserHash(user);
             return { user, refreshToken };
@@ -63,7 +63,7 @@ let AuthServices = class AuthServices {
             const isRtValid = await argon.verify(user.rT, jwt);
             if (!isRtValid)
                 throw new common_1.HttpException('Access denied, Invalid RT', common_1.HttpStatus.FORBIDDEN);
-            const { accessToken } = await this.generateTokens({ userId: user.id });
+            const { accessToken } = await this.generateTokens({ id: user.id });
             return { accessToken };
         }
         catch (err) {
@@ -122,13 +122,13 @@ let AuthServices = class AuthServices {
             data: { rT: hashedRt },
         });
     }
-    async generateTokens(userId) {
+    async generateTokens(id) {
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwt.signAsync(userId, {
+            this.jwt.signAsync(id, {
                 expiresIn: '1m',
                 secret: this.config.get('ACCESS_SECRET_TOKEN'),
             }),
-            this.jwt.signAsync(userId, {
+            this.jwt.signAsync(id, {
                 expiresIn: '1d',
                 secret: this.config.get('REFRESH_SECRET_TOKEN'),
             }),
