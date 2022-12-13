@@ -55,11 +55,11 @@ let UserService = class UserService {
             if (!user) {
                 throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
             }
-            if (!image.includes(';base64,'))
-                throw new common_1.HttpException('image is not valid', common_1.HttpStatus.BAD_REQUEST);
             const imgFlag = user.id.split('-')[0] + '_image';
             let uploadedImage;
             if (image) {
+                if (!image.includes(';base64,'))
+                    throw new common_1.HttpException('image is not valid', common_1.HttpStatus.BAD_REQUEST);
                 uploadedImage = await cloudinary_1.default.uploader.upload(image, {
                     overwrite: true,
                     public_id: imgFlag,
@@ -77,7 +77,11 @@ let UserService = class UserService {
             else {
                 updatedUser = await this.prisma.user.update({
                     where: { id: user.id },
-                    data: { name, email, image: uploadedImage.secure_url },
+                    data: {
+                        name,
+                        email,
+                        image: image ? uploadedImage.secure_url : user.image,
+                    },
                 });
             }
             this.deleteUserHash(updatedUser);
