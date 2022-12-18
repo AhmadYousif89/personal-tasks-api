@@ -11,6 +11,7 @@ CREATE TABLE "users" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "provider" TEXT DEFAULT 'No_Provider',
     "hash" TEXT NOT NULL,
     "image" TEXT,
     "rT" TEXT,

@@ -60,12 +60,6 @@ let AuthServices = class AuthServices {
             const exUser = await this.prisma.user.findUnique({
                 where: { email: dto.email },
             });
-            if (exUser) {
-                await this.prisma.user.update({
-                    where: { email: dto.email },
-                    data: dto,
-                });
-            }
             let user;
             if (!exUser) {
                 user = await this.prisma.user.create({ data: Object.assign(Object.assign({}, dto), { hash: '' }) });

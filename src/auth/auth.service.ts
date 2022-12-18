@@ -66,13 +66,6 @@ export class AuthServices {
       const exUser = await this.prisma.user.findUnique({
         where: { email: dto.email },
       });
-      // update old user if data is staled
-      if (exUser) {
-        await this.prisma.user.update({
-          where: { email: dto.email },
-          data: dto,
-        });
-      }
 
       let user: User;
       if (!exUser) {
