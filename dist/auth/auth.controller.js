@@ -14,11 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
-const decorators_1 = require("./../common/decorators");
-const decorators_2 = require("./../common/decorators");
+const auth_service_1 = require("./auth.service");
 const dto_1 = require("./dto");
 const guards_1 = require("./../common/guards");
-const auth_service_1 = require("./auth.service");
+const decorators_1 = require("./../common/decorators");
 let AuthController = class AuthController {
     constructor(authServices) {
         this.authServices = authServices;
@@ -31,6 +30,11 @@ let AuthController = class AuthController {
     }
     async login(dto, res) {
         const { user, refreshToken } = await this.authServices.login(dto);
+        this.attachCookie(res, refreshToken);
+        return res.json(user);
+    }
+    async validateGoogleUser(gUser, res) {
+        const { user, refreshToken } = await this.authServices.loginWithGoogle(gUser);
         this.attachCookie(res, refreshToken);
         return res.json(user);
     }
@@ -71,10 +75,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
+    (0, common_1.Post)('google/login'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, decorators_1.GetGoogleUser)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "validateGoogleUser", null);
+__decorate([
     (0, common_1.Get)('refresh'),
     (0, common_1.UseGuards)(guards_1.RtAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, decorators_2.GetUserId)()),
+    __param(0, (0, decorators_1.GetUserId)()),
     __param(1, (0, decorators_1.Cookies)('jwt')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
@@ -89,10 +102,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resetPassword", null);
 __decorate([
-    (0, decorators_2.Protected)(),
+    (0, decorators_1.Protected)(),
     (0, common_1.Post)('logout'),
     __param(0, (0, common_1.Res)()),
-    __param(1, (0, decorators_2.GetUserId)()),
+    __param(1, (0, decorators_1.GetUserId)()),
     __param(2, (0, decorators_1.Cookies)('jwt')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, String]),

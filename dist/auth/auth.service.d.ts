@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { PrismaService } from './../prisma/prisma.service';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
+import { GoogleUser } from './types';
 import { User } from '@prisma/client';
 export declare class AuthServices {
     private prisma;
@@ -14,6 +15,10 @@ export declare class AuthServices {
         refreshToken: string;
     }>;
     login(dto: AuthLoginDto): Promise<{
+        user: User;
+        refreshToken: string;
+    }>;
+    loginWithGoogle(dto: GoogleUser): Promise<{
         user: User;
         refreshToken: string;
     }>;

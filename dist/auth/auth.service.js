@@ -40,6 +40,8 @@ let AuthServices = class AuthServices {
         try {
             const { email, password } = dto;
             const user = await this.prisma.user.findUnique({ where: { email } });
+            if (user && !user.hash)
+                throw new common_1.HttpException(`Unauthorized google user`, common_1.HttpStatus.UNAUTHORIZED);
             const isPwValid = await argon.verify(user.hash, password);
             if (!isPwValid) {
                 throw new common_1.HttpException('Invalid credentials', common_1.HttpStatus.UNAUTHORIZED);
@@ -48,6 +50,32 @@ let AuthServices = class AuthServices {
             await this.updateRt(user.id, refreshToken);
             this.deleteUserHash(user);
             return { user, refreshToken };
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+    async loginWithGoogle(dto) {
+        try {
+            const exUser = await this.prisma.user.findUnique({
+                where: { email: dto.email },
+            });
+            if (exUser) {
+                await this.prisma.user.update({
+                    where: { email: dto.email },
+                    data: dto,
+                });
+            }
+            let user;
+            if (!exUser) {
+                user = await this.prisma.user.create({ data: Object.assign(Object.assign({}, dto), { hash: '' }) });
+            }
+            const loggedUser = user || exUser;
+            const userId = loggedUser.id;
+            const { refreshToken } = await this.generateTokens({ id: userId });
+            await this.updateRt(userId, refreshToken);
+            this.deleteUserHash(loggedUser);
+            return { user: loggedUser, refreshToken };
         }
         catch (err) {
             throw err;

@@ -1,12 +1,14 @@
 import { Response } from 'express';
-import { AuthLoginDto, AuthRegisterDto } from './dto';
+import { GoogleUser } from './types';
 import { AuthServices } from './auth.service';
+import { AuthLoginDto, AuthRegisterDto } from './dto';
 export declare class AuthController {
     private readonly authServices;
     private timeToExpire;
     constructor(authServices: AuthServices);
     register(dto: AuthRegisterDto, res: Response): Promise<Response<any, Record<string, any>>>;
     login(dto: AuthLoginDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    validateGoogleUser(gUser: GoogleUser, res: Response): Promise<Response<any, Record<string, any>>>;
     refreshToken(id: string, jwt: string): Promise<{
         accessToken: string;
     }>;

@@ -5,9 +5,9 @@ import { AuthServices } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AtStrategy, RtStrategy } from './strategies';
 import {
+  IsPasswordValid,
   ValidateEmailOnSignUp,
   ValidateEmailOnSignIn,
-  IsPasswordValid,
 } from '../common/validator';
 
 @Module({
@@ -17,9 +17,9 @@ import {
     AuthServices,
     AtStrategy,
     RtStrategy,
+    IsPasswordValid,
     ValidateEmailOnSignUp,
     ValidateEmailOnSignIn,
-    IsPasswordValid,
   ],
 })
 export class AuthModule {}

@@ -4,17 +4,22 @@ import {
   Post,
   Body,
   HttpCode,
-  HttpStatus,
   UseGuards,
+  HttpStatus,
   Controller,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { Cookies } from './../common/decorators';
 
-import { GetUserId, Protected } from './../common/decorators';
+import { GoogleUser } from './types';
+import { AuthServices } from './auth.service';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
 import { RtAuthGuard } from './../common/guards';
-import { AuthServices } from './auth.service';
+import {
+  Cookies,
+  GetUserId,
+  Protected,
+  GetGoogleUser,
+} from './../common/decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +39,19 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() dto: AuthLoginDto, @Res() res: Response) {
     const { user, refreshToken } = await this.authServices.login(dto);
+    this.attachCookie(res, refreshToken);
+    return res.json(user);
+  }
+
+  @Post('google/login')
+  @HttpCode(HttpStatus.OK)
+  async validateGoogleUser(
+    @GetGoogleUser() gUser: GoogleUser,
+    @Res() res: Response,
+  ) {
+    const { user, refreshToken } = await this.authServices.loginWithGoogle(
+      gUser,
+    );
     this.attachCookie(res, refreshToken);
     return res.json(user);
   }

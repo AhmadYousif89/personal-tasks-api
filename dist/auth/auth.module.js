@@ -23,9 +23,9 @@ AuthModule = __decorate([
             auth_service_1.AuthServices,
             strategies_1.AtStrategy,
             strategies_1.RtStrategy,
+            validator_1.IsPasswordValid,
             validator_1.ValidateEmailOnSignUp,
             validator_1.ValidateEmailOnSignIn,
-            validator_1.IsPasswordValid,
         ],
     })
 ], AuthModule);
