@@ -30,9 +30,6 @@ let UserController = class UserController {
     updateUserById(id, dto) {
         return this.userService.updateUserById(id, dto);
     }
-    updateUserImage(id, image) {
-        return this.userService.updateUserImage(id, image);
-    }
     deleteUserById(id) {
         return this.userService.deleteUserById(id);
     }
@@ -60,15 +57,6 @@ __decorate([
     __metadata("design:paramtypes", [String, dto_1.EditUserDto]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "updateUserById", null);
-__decorate([
-    (0, decorators_1.Protected)(),
-    (0, common_1.Patch)('me'),
-    __param(0, (0, decorators_1.GetUserId)()),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "updateUserImage", null);
 __decorate([
     (0, decorators_1.Protected)(),
     (0, common_1.Delete)('me'),

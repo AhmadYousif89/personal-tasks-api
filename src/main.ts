@@ -1,9 +1,10 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
+
 import { AppModule } from './app.module';
 import { corsOptions } from './cors-options';
 

@@ -69,43 +69,16 @@ export class UserService {
         });
       }
 
-      let updatedUser: User;
-      if (password) {
-        const newHash = await argon.hash(password);
-        updatedUser = await this.prisma.user.update({
-          where: { id: user.id },
-          data: { name, email, image: uploadedImage.secure_url, hash: newHash },
-        });
-      } else {
-        updatedUser = await this.prisma.user.update({
-          where: { id: user.id },
-          data: {
-            name,
-            email,
-            image: image ? uploadedImage.secure_url : user.image,
-          },
-        });
-      }
+      const passwordMatchs = await argon.verify(user.hash, password);
 
-      this.deleteUserHash(updatedUser);
-      return updatedUser;
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  async updateUserImage(id: string, image: string) {
-    if (!image) return {};
-
-    try {
-      const user = await this.prisma.user.findUnique({ where: { id } });
-
-      if (!user) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      }
       const updatedUser = await this.prisma.user.update({
-        where: { id: user.id },
-        data: { image },
+        where: { id },
+        data: {
+          name,
+          email,
+          image: image ? uploadedImage.secure_url : user.image,
+          hash: passwordMatchs ? user.hash : await argon.hash(password),
+        },
       });
 
       this.deleteUserHash(updatedUser);
@@ -121,7 +94,7 @@ export class UserService {
 
       if (!user) throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
 
-      await this.prisma.user.delete({ where: { id: user.id } });
+      await this.prisma.user.delete({ where: { id } });
 
       return { message: 'User deleted' };
     } catch (err) {
