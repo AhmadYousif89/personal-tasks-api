@@ -14,7 +14,7 @@ model User {
 
   email    String    @unique
   name     String
-  provider String?   @default("No provider")
+  provider String?   @default("No_Provider")
   hash     String
   image    String?
   rT       String?

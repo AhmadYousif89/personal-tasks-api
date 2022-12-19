@@ -69,7 +69,10 @@ export class UserService {
         });
       }
 
-      const passwordMatchs = await argon.verify(user.hash, password);
+      let newHash: string;
+      let passwordMatchs: boolean;
+      if (password) newHash = await argon.hash(password);
+      if (password) passwordMatchs = await argon.verify(user.hash, password);
 
       const updatedUser = await this.prisma.user.update({
         where: { id },
@@ -77,7 +80,7 @@ export class UserService {
           name,
           email,
           image: image ? uploadedImage.secure_url : user.image,
-          hash: passwordMatchs ? user.hash : await argon.hash(password),
+          hash: passwordMatchs ? user.hash : newHash,
         },
       });
 
