@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.corsOptions = void 0;
+const VERCEL_URL = process.env.VERCEL_URL;
+const RENDER_URL = process.env.RENDER_URL;
 const DEVELOPMENT_URL = process.env.DEVELOPMENT_URL;
-const PRODUCTION_URL = process.env.PRODUCTION_URL;
-const allowedOrigins = [DEVELOPMENT_URL, PRODUCTION_URL];
+const allowedOrigins = [DEVELOPMENT_URL, VERCEL_URL, RENDER_URL];
 exports.corsOptions = {
     origin: (origin, cb) => {
         if (allowedOrigins.includes(origin) || !origin) {
