@@ -57,7 +57,7 @@ let AuthServices = class AuthServices {
     }
     async loginWithGoogle(dto) {
         ;
-        (oo_oo(), console.log(dto, `63d8f428_0`));
+        (oo_oo(), console.log('loginWithGoogle: ', dto, `6af75bc6_0`));
         try {
             const exUser = await this.prisma.user.findUnique({
                 where: { email: dto.email },
