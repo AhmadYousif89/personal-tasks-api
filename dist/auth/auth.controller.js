@@ -41,10 +41,9 @@ let AuthController = class AuthController {
     async GoogleRedirect(res, req) {
         this.gUser = req.user;
         ;
-        (oo_oo(), console.log('gUser: ', this.gUser, `208b7598_0`));
+        (oo_oo(), console.log('gUser: ', this.gUser, `bc6b7cd0_0`));
         return res.redirect(`${process.env.NODE_ENV === 'production'
-            ? this.config.get('REDIRECT_VERCEL_URL') ||
-                this.config.get('REDIRECT_RENDER_URL')
+            ? this.config.get('REDIRECT_URL_VERCEL')
             : this.config.get('REDIRECT_DEV_URL')}`);
     }
     async validateGoogleUser(res) {
