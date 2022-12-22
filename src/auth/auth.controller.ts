@@ -56,7 +56,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async GoogleRedirect(@Res() res: Response, @Req() req: Request) {
     this.gUser = req.user as GoogleUser;
-    console.log('gUser: ', this.gUser);
     return res.redirect(
       `${
         process.env.NODE_ENV === 'production'
