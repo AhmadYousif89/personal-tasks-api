@@ -9,10 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoogleAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-let GoogleAuthGuard = class GoogleAuthGuard extends (0, passport_1.AuthGuard)('google') {
-    async canActivate(context) {
-        const result = (await super.canActivate(context));
-        return result;
+let GoogleAuthGuard = class GoogleAuthGuard extends (0, passport_1.AuthGuard)('googleOauth') {
+    canActivate(context) {
+        const activate = super.canActivate(context);
+        return activate;
     }
 };
 GoogleAuthGuard = __decorate([

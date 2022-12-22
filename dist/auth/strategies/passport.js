@@ -6,17 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoogleAuthGuard = void 0;
-const common_1 = require("@nestjs/common");
+exports.CookieSerializer = void 0;
 const passport_1 = require("@nestjs/passport");
-let GoogleAuthGuard = class GoogleAuthGuard extends (0, passport_1.AuthGuard)('google') {
-    async canActivate(context) {
-        const result = (await super.canActivate(context));
-        return result;
+const common_1 = require("@nestjs/common");
+let CookieSerializer = class CookieSerializer extends passport_1.PassportSerializer {
+    serializeUser(user, done) {
+        done(null, user);
+    }
+    deserializeUser(user, done) {
+        done(null, user);
     }
 };
-GoogleAuthGuard = __decorate([
+CookieSerializer = __decorate([
     (0, common_1.Injectable)()
-], GoogleAuthGuard);
-exports.GoogleAuthGuard = GoogleAuthGuard;
-//# sourceMappingURL=googleOAuth.guard.js.map
+], CookieSerializer);
+exports.CookieSerializer = CookieSerializer;
+//# sourceMappingURL=passport.js.map

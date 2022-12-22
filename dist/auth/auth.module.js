@@ -13,6 +13,7 @@ const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const strategies_1 = require("./strategies");
 const validator_1 = require("../common/validator");
+const googleOAuth_strategy_1 = require("./strategies/googleOAuth.strategy");
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -20,9 +21,10 @@ AuthModule = __decorate([
         imports: [jwt_1.JwtModule.register({})],
         controllers: [auth_controller_1.AuthController],
         providers: [
-            auth_service_1.AuthServices,
             strategies_1.AtStrategy,
             strategies_1.RtStrategy,
+            auth_service_1.AuthServices,
+            googleOAuth_strategy_1.GoogleStrategy,
             validator_1.IsPasswordValid,
             validator_1.ValidateEmailOnSignUp,
             validator_1.ValidateEmailOnSignIn,

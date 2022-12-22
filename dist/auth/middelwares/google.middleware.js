@@ -6,17 +6,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoogleAuthGuard = void 0;
+exports.GoogleMiddleware = void 0;
 const common_1 = require("@nestjs/common");
-const passport_1 = require("@nestjs/passport");
-let GoogleAuthGuard = class GoogleAuthGuard extends (0, passport_1.AuthGuard)('google') {
-    async canActivate(context) {
-        const result = (await super.canActivate(context));
-        return result;
+let GoogleMiddleware = class GoogleMiddleware {
+    use(req, res, next) {
+        next();
     }
 };
-GoogleAuthGuard = __decorate([
+GoogleMiddleware = __decorate([
     (0, common_1.Injectable)()
-], GoogleAuthGuard);
-exports.GoogleAuthGuard = GoogleAuthGuard;
-//# sourceMappingURL=googleOAuth.guard.js.map
+], GoogleMiddleware);
+exports.GoogleMiddleware = GoogleMiddleware;
+//# sourceMappingURL=google.middleware.js.map

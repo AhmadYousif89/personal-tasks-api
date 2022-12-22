@@ -14,12 +14,12 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const passport_google_oauth20_1 = require("passport-google-oauth20");
-let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrategy)(passport_google_oauth20_1.Strategy, 'google') {
+let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrategy)(passport_google_oauth20_1.Strategy, 'googleOauth') {
     constructor(config) {
         super({
             clientID: config.get('CLIENT_ID'),
             clientSecret: config.get('CLIENT_SECRET'),
-            callbackURL: 'http://localhost:8520/auth/google/callback',
+            callbackURL: config.get('REDIRECT_URL_DEV'),
             scope: ['email', 'profile'],
         });
         this.config = config;

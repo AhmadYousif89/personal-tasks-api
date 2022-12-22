@@ -9,14 +9,16 @@ import {
   ValidateEmailOnSignUp,
   ValidateEmailOnSignIn,
 } from '../common/validator';
+import { GoogleStrategy } from './strategies/googleOAuth.strategy';
 
 @Module({
   imports: [JwtModule.register({})],
   controllers: [AuthController],
   providers: [
-    AuthServices,
     AtStrategy,
     RtStrategy,
+    AuthServices,
+    GoogleStrategy,
     IsPasswordValid,
     ValidateEmailOnSignUp,
     ValidateEmailOnSignIn,

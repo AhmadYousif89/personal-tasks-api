@@ -18,5 +18,4 @@ __exportStar(require("./getUser.decorator"), exports);
 __exportStar(require("./getUserId.decorator"), exports);
 __exportStar(require("./protect.decorator"), exports);
 __exportStar(require("./getCookies.decorator"), exports);
-__exportStar(require("./getGoogleUser.decorator"), exports);
 //# sourceMappingURL=index.js.map

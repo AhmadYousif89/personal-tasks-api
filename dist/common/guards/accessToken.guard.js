@@ -11,8 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AtAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const core_1 = require("@nestjs/core");
 const passport_1 = require("@nestjs/passport");
+const core_1 = require("@nestjs/core");
 let AtAuthGuard = class AtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
     constructor(reflector) {
         super();

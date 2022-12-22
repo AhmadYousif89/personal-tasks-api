@@ -14,12 +14,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const auth_service_1 = require("./auth.service");
 const dto_1 = require("./dto");
 const guards_1 = require("./../common/guards");
 const decorators_1 = require("./../common/decorators");
 let AuthController = class AuthController {
-    constructor(authServices) {
+    constructor(config, authServices) {
+        this.config = config;
         this.authServices = authServices;
         this.timeToExpire = 24 * 60 * 60 * 1000;
     }
@@ -33,8 +35,18 @@ let AuthController = class AuthController {
         this.attachCookie(res, refreshToken);
         return res.json(user);
     }
-    async validateGoogleUser(gUser, res) {
-        const { user, refreshToken } = await this.authServices.loginWithGoogle(gUser);
+    async googleAuth() {
+        return 'Authentication with Google';
+    }
+    async GU(res, req) {
+        this.gUser = req.user;
+        return res.redirect(`${process.env.NODE_ENV === 'production'
+            ? this.config.get('REDIRECT_VERCEL_URL') ||
+                this.config.get('REDIRECT_RENDER_URL')
+            : this.config.get('REDIRECT_DEV_URL')}`);
+    }
+    async validateGoogleUser(res) {
+        const { user, refreshToken } = await this.authServices.loginWithGoogle(this.gUser);
         this.attachCookie(res, refreshToken);
         return res.json(user);
     }
@@ -75,12 +87,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Post)('google/login'),
+    (0, common_1.Get)('google'),
+    (0, common_1.UseGuards)(guards_1.GoogleAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, decorators_1.GetGoogleUser)()),
-    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "googleAuth", null);
+__decorate([
+    (0, common_1.Get)('google/callback'),
+    (0, common_1.UseGuards)(guards_1.GoogleAuthGuard),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "GU", null);
+__decorate([
+    (0, common_1.Get)('google/login'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "validateGoogleUser", null);
 __decorate([
@@ -113,7 +142,8 @@ __decorate([
 ], AuthController.prototype, "logout", null);
 AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthServices])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        auth_service_1.AuthServices])
 ], AuthController);
 exports.AuthController = AuthController;
 //# sourceMappingURL=auth.controller.js.map

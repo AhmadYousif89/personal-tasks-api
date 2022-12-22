@@ -1,14 +1,18 @@
-import { Response } from 'express';
-import { GoogleUser } from './types';
+import { ConfigService } from '@nestjs/config';
+import { Request, Response } from 'express';
 import { AuthServices } from './auth.service';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
 export declare class AuthController {
+    private config;
     private readonly authServices;
     private timeToExpire;
-    constructor(authServices: AuthServices);
+    private gUser;
+    constructor(config: ConfigService, authServices: AuthServices);
     register(dto: AuthRegisterDto, res: Response): Promise<Response<any, Record<string, any>>>;
     login(dto: AuthLoginDto, res: Response): Promise<Response<any, Record<string, any>>>;
-    validateGoogleUser(gUser: GoogleUser, res: Response): Promise<Response<any, Record<string, any>>>;
+    googleAuth(): Promise<string>;
+    GU(res: Response, req: Request): Promise<void>;
+    validateGoogleUser(res: Response): Promise<Response<any, Record<string, any>>>;
     refreshToken(id: string, jwt: string): Promise<{
         accessToken: string;
     }>;

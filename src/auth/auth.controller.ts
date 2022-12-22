@@ -1,5 +1,6 @@
 import {
   Get,
+  Req,
   Res,
   Post,
   Body,
@@ -8,24 +9,24 @@ import {
   HttpStatus,
   Controller,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { Request, Response } from 'express';
 
 import { GoogleUser } from './types';
 import { AuthServices } from './auth.service';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
-import { RtAuthGuard } from './../common/guards';
-import {
-  Cookies,
-  GetUserId,
-  Protected,
-  GetGoogleUser,
-} from './../common/decorators';
+import { GoogleAuthGuard, RtAuthGuard } from './../common/guards';
+import { Cookies, GetUserId, Protected } from './../common/decorators';
 
 @Controller('auth')
 export class AuthController {
   private timeToExpire = 24 * 60 * 60 * 1000; // (1 Day)
+  private gUser: GoogleUser;
 
-  constructor(private readonly authServices: AuthServices) {}
+  constructor(
+    private config: ConfigService,
+    private readonly authServices: AuthServices,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -43,14 +44,33 @@ export class AuthController {
     return res.json(user);
   }
 
-  @Post('google/login')
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async validateGoogleUser(
-    @GetGoogleUser() gUser: GoogleUser,
-    @Res() res: Response,
-  ) {
+  async googleAuth() {
+    return 'Authentication with Google';
+  }
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async GU(@Res() res: Response, @Req() req: Request) {
+    this.gUser = req.user as GoogleUser;
+    return res.redirect(
+      `${
+        process.env.NODE_ENV === 'production'
+          ? this.config.get('REDIRECT_VERCEL_URL') ||
+            this.config.get('REDIRECT_RENDER_URL')
+          : this.config.get('REDIRECT_DEV_URL')
+      }`,
+    );
+  }
+
+  @Get('google/login')
+  @HttpCode(HttpStatus.OK)
+  async validateGoogleUser(@Res() res: Response) {
     const { user, refreshToken } = await this.authServices.loginWithGoogle(
-      gUser,
+      this.gUser,
     );
     this.attachCookie(res, refreshToken);
     return res.json(user);

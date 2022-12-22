@@ -149,7 +149,7 @@ export class AuthServices {
 
       return res
         .clearCookie('jwt', {
-          secure: process.env.NODE_ENV === 'production',
+          secure: true,
           httpOnly: true,
           sameSite: 'none',
         })
