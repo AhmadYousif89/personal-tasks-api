@@ -19,7 +19,10 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
         super({
             clientID: config.get('CLIENT_ID'),
             clientSecret: config.get('CLIENT_SECRET'),
-            callbackURL: 'http://localhost:8520/auth/google/callback',
+            callbackURL: process.env.NODE_ENV === 'production'
+                ? config.get('GOOGLE_CALLBACK_URL_VECERL') ||
+                    config.get('GOOGLE_CALLBACK_URL_RENDER')
+                : config.get('GOOGLE_CALLBACK_URL_DEV'),
             scope: ['email', 'profile'],
         });
         this.config = config;
@@ -28,7 +31,7 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
         const { name, picture: image, email } = profile._json;
         const payload = { name, image, email, provider: profile.provider };
         ;
-        (oo_oo(), console.log('payload: ', payload, `4ec9d914_0`));
+        (oo_oo(), console.log('payload: ', payload, `d3482e24_0`));
         return payload;
     }
 };

@@ -60,7 +60,8 @@ export class AuthController {
     return res.redirect(
       `${
         process.env.NODE_ENV === 'production'
-          ? this.config.get('REDIRECT_URL_VERCEL')
+          ? this.config.get('REDIRECT_URL_VERCEL') ||
+            this.config.get('REDIRECT_URL_RENDER')
           : this.config.get('REDIRECT_DEV_URL')
       }`,
     );
