@@ -38,7 +38,7 @@ let AuthController = class AuthController {
     async googleAuth() {
         return 'Authentication with Google';
     }
-    async GU(res, req) {
+    async GoogleRedirect(res, req) {
         this.gUser = req.user;
         return res.redirect(`${process.env.NODE_ENV === 'production'
             ? this.config.get('REDIRECT_VERCEL_URL') ||
@@ -103,7 +103,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "GU", null);
+], AuthController.prototype, "GoogleRedirect", null);
 __decorate([
     (0, common_1.Get)('google/login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

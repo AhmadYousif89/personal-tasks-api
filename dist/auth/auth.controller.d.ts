@@ -11,7 +11,7 @@ export declare class AuthController {
     register(dto: AuthRegisterDto, res: Response): Promise<Response<any, Record<string, any>>>;
     login(dto: AuthLoginDto, res: Response): Promise<Response<any, Record<string, any>>>;
     googleAuth(): Promise<string>;
-    GU(res: Response, req: Request): Promise<void>;
+    GoogleRedirect(res: Response, req: Request): Promise<void>;
     validateGoogleUser(res: Response): Promise<Response<any, Record<string, any>>>;
     refreshToken(id: string, jwt: string): Promise<{
         accessToken: string;

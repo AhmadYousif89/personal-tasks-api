@@ -54,7 +54,7 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async GU(@Res() res: Response, @Req() req: Request) {
+  async GoogleRedirect(@Res() res: Response, @Req() req: Request) {
     this.gUser = req.user as GoogleUser;
     return res.redirect(
       `${
