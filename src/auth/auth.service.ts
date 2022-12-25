@@ -63,9 +63,12 @@ export class AuthServices {
 
   async googleRedirect(gUser: GoogleUser, res: Response) {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { email: gUser.email },
-      });
+      let user: User;
+      if (gUser) {
+        user = await this.prisma.user.findUnique({
+          where: { email: gUser.email },
+        });
+      }
 
       if (user) {
         return res.redirect(
@@ -89,16 +92,16 @@ export class AuthServices {
     } catch (err) {}
   }
 
-  async loginWithGoogle(dto: GoogleUser) {
+  async loginWithGoogle(gUser: GoogleUser) {
     try {
       const exUser = await this.prisma.user.findUnique({
-        where: { email: dto.email },
+        where: { email: gUser.email },
       });
 
       let user: User;
       if (!exUser) {
         user = await this.prisma.user.create({
-          data: { ...dto, hash: '', isRegistered: true },
+          data: { ...gUser, hash: '', isRegistered: true },
         });
       }
 

@@ -38,14 +38,19 @@ let AuthController = class AuthController {
     async googleAuth() {
         return 'Authentication with Google';
     }
-    async GoogleRedirect(req, res) {
+    async googleRedirect(req, res) {
         this.gUser = req.user;
         await this.authServices.googleRedirect(this.gUser, res);
     }
-    async validateGoogleUser(res) {
-        const { user, refreshToken } = await this.authServices.loginWithGoogle(this.gUser);
-        this.attachCookie(res, refreshToken);
-        return res.json(user);
+    async loginWithGoogle(res) {
+        if (this.gUser) {
+            const { user, refreshToken } = await this.authServices.loginWithGoogle(this.gUser);
+            this.attachCookie(res, refreshToken);
+            return res.json(user);
+        }
+        return res.redirect(`${process.env.NODE_ENV === 'production'
+            ? this.config.get('VERCEL_URL') || this.config.get('RENDER_URL')
+            : this.config.get('DEV_URL')}`);
     }
     async refreshToken(id, jwt) {
         return this.authServices.refreshToken(id, jwt);
@@ -100,7 +105,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "GoogleRedirect", null);
+], AuthController.prototype, "googleRedirect", null);
 __decorate([
     (0, common_1.Get)('google/login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
@@ -108,7 +113,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AuthController.prototype, "validateGoogleUser", null);
+], AuthController.prototype, "loginWithGoogle", null);
 __decorate([
     (0, common_1.Get)('refresh'),
     (0, common_1.UseGuards)(guards_1.RtAuthGuard),

@@ -1,9 +1,9 @@
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
-const VERCEL_URL = process.env.VERCEL_URL;
-const RENDER_URL = process.env.RENDER_URL;
-const DEVELOPMENT_URL = process.env.DEV_URL;
-const allowedOrigins = [DEVELOPMENT_URL, VERCEL_URL, RENDER_URL];
+const VERCEL = process.env.VERCEL_URL;
+const RENDER = process.env.RENDER_URL;
+const DEVELOPMENT = process.env.DEV_URL;
+const allowedOrigins = [DEVELOPMENT, VERCEL, RENDER];
 
 export const corsOptions: CorsOptions = {
   origin: (origin: string, cb: any) => {

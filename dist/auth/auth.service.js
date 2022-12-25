@@ -57,9 +57,12 @@ let AuthServices = class AuthServices {
     }
     async googleRedirect(gUser, res) {
         try {
-            const user = await this.prisma.user.findUnique({
-                where: { email: gUser.email },
-            });
+            let user;
+            if (gUser) {
+                user = await this.prisma.user.findUnique({
+                    where: { email: gUser.email },
+                });
+            }
             if (user) {
                 return res.redirect(`${process.env.NODE_ENV === 'production'
                     ? this.config.get('REDIRECT_VERCEL_GOOGLE_CHECK') ||
@@ -73,15 +76,15 @@ let AuthServices = class AuthServices {
         }
         catch (err) { }
     }
-    async loginWithGoogle(dto) {
+    async loginWithGoogle(gUser) {
         try {
             const exUser = await this.prisma.user.findUnique({
-                where: { email: dto.email },
+                where: { email: gUser.email },
             });
             let user;
             if (!exUser) {
                 user = await this.prisma.user.create({
-                    data: Object.assign(Object.assign({}, dto), { hash: '', isRegistered: true }),
+                    data: Object.assign(Object.assign({}, gUser), { hash: '', isRegistered: true }),
                 });
             }
             const loggedUser = user || exUser;
