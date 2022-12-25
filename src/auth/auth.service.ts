@@ -89,7 +89,9 @@ export class AuthServices {
             : this.config.get('REDIRECT_DEV_GOOGLE_LOGIN')
         }`,
       );
-    } catch (err) {}
+    } catch (err) {
+      throw err;
+    }
   }
 
   async loginWithGoogle(gUser: GoogleUser) {
