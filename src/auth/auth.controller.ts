@@ -54,16 +54,9 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async GoogleRedirect(@Res() res: Response, @Req() req: Request) {
+  async GoogleRedirect(@Req() req: Request, @Res() res: Response) {
     this.gUser = req.user as GoogleUser;
-    return res.redirect(
-      `${
-        process.env.NODE_ENV === 'production'
-          ? this.config.get('REDIRECT_URL_VERCEL') ||
-            this.config.get('REDIRECT_URL_RENDER')
-          : this.config.get('REDIRECT_DEV_URL')
-      }`,
-    );
+    await this.authServices.googleRedirect(this.gUser, res);
   }
 
   @Get('google/login')

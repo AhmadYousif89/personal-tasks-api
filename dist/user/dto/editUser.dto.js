@@ -34,5 +34,10 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], EditUserDto.prototype, "image", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], EditUserDto.prototype, "isRegistered", void 0);
 exports.EditUserDto = EditUserDto;
 //# sourceMappingURL=editUser.dto.js.map

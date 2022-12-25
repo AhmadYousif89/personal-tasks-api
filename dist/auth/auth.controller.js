@@ -38,12 +38,9 @@ let AuthController = class AuthController {
     async googleAuth() {
         return 'Authentication with Google';
     }
-    async GoogleRedirect(res, req) {
+    async GoogleRedirect(req, res) {
         this.gUser = req.user;
-        return res.redirect(`${process.env.NODE_ENV === 'production'
-            ? this.config.get('REDIRECT_URL_VERCEL') ||
-                this.config.get('REDIRECT_URL_RENDER')
-            : this.config.get('REDIRECT_DEV_URL')}`);
+        await this.authServices.googleRedirect(this.gUser, res);
     }
     async validateGoogleUser(res) {
         const { user, refreshToken } = await this.authServices.loginWithGoogle(this.gUser);
@@ -98,8 +95,8 @@ __decorate([
     (0, common_1.Get)('google/callback'),
     (0, common_1.UseGuards)(guards_1.GoogleAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, common_1.Res)()),
-    __param(1, (0, common_1.Req)()),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

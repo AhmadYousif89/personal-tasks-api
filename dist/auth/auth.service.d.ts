@@ -18,6 +18,7 @@ export declare class AuthServices {
         user: User;
         refreshToken: string;
     }>;
+    googleRedirect(gUser: GoogleUser, res: Response): Promise<void>;
     loginWithGoogle(dto: GoogleUser): Promise<{
         user: User;
         refreshToken: string;

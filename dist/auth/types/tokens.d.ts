@@ -1,4 +1,4 @@
-export declare type Tokens = {
+export type Tokens = {
     accessToken: string;
     refreshToken: string;
 };

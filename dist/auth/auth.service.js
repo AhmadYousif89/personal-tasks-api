@@ -55,6 +55,24 @@ let AuthServices = class AuthServices {
             throw err;
         }
     }
+    async googleRedirect(gUser, res) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: { email: gUser.email },
+            });
+            if (user) {
+                return res.redirect(`${process.env.NODE_ENV === 'production'
+                    ? this.config.get('REDIRECT_VERCEL_GOOGLE_CHECK') ||
+                        this.config.get('REDIRECT_RENDER_GOOGLE_CHECK')
+                    : this.config.get('REDIRECT_DEV_GOOGLE_CHECK')}`);
+            }
+            return res.redirect(`${process.env.NODE_ENV === 'production'
+                ? this.config.get('REDIRECT_VERCEL_GOOGLE_LOGIN') ||
+                    this.config.get('REDIRECT_RENDER_GOOGLE_LOGIN')
+                : this.config.get('REDIRECT_DEV_GOOGLE_LOGIN')}`);
+        }
+        catch (err) { }
+    }
     async loginWithGoogle(dto) {
         try {
             const exUser = await this.prisma.user.findUnique({
@@ -62,7 +80,9 @@ let AuthServices = class AuthServices {
             });
             let user;
             if (!exUser) {
-                user = await this.prisma.user.create({ data: Object.assign(Object.assign({}, dto), { hash: '' }) });
+                user = await this.prisma.user.create({
+                    data: Object.assign(Object.assign({}, dto), { hash: '', isRegistered: true }),
+                });
             }
             const loggedUser = user || exUser;
             const userId = loggedUser.id;

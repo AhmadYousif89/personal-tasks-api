@@ -8,43 +8,46 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(dbgenerated("(concat('usr_', gen_random_uuid()))::TEXT")) @unique
+  id        String   @id @unique @default(dbgenerated("(concat('usr_', gen_random_uuid()))::TEXT"))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email    String    @unique
-  name     String
-  provider String?   @default("No_Provider")
-  hash     String
-  image    String?
-  rT       String?
+  email        String  @unique
+  name         String
+  hash         String
+  isRegistered Boolean @default(false)
+  provider     String? @default("No_Provider")
+  image        String?
+  rT           String?
 
   tasks Task[]
+
   @@map("users")
 }
 
 model Task {
-  id        String   @id @default(dbgenerated("(concat('tsk_', gen_random_uuid()))::TEXT")) @unique
+  id        String   @id @unique @default(dbgenerated("(concat('tsk_', gen_random_uuid()))::TEXT"))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  title     String
-  details   String
-  status    TaskStatus @default(Todo)
-  priority  TaskPriority @default(Normal)
+  title    String
+  details  String
+  status   TaskStatus   @default(Todo)
+  priority TaskPriority @default(Normal)
 
-  userId    String 
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("tasks")
 }
 
 enum TaskStatus {
-  Todo 
+  Todo
   InProgress
   Completed
 }
 
 enum TaskPriority {
-  Normal 
+  Normal
   High
 }

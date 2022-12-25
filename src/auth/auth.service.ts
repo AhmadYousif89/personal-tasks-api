@@ -61,6 +61,34 @@ export class AuthServices {
     }
   }
 
+  async googleRedirect(gUser: GoogleUser, res: Response) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { email: gUser.email },
+      });
+
+      if (user) {
+        return res.redirect(
+          `${
+            process.env.NODE_ENV === 'production'
+              ? this.config.get('REDIRECT_VERCEL_GOOGLE_CHECK') ||
+                this.config.get('REDIRECT_RENDER_GOOGLE_CHECK')
+              : this.config.get('REDIRECT_DEV_GOOGLE_CHECK')
+          }`,
+        );
+      }
+
+      return res.redirect(
+        `${
+          process.env.NODE_ENV === 'production'
+            ? this.config.get('REDIRECT_VERCEL_GOOGLE_LOGIN') ||
+              this.config.get('REDIRECT_RENDER_GOOGLE_LOGIN')
+            : this.config.get('REDIRECT_DEV_GOOGLE_LOGIN')
+        }`,
+      );
+    } catch (err) {}
+  }
+
   async loginWithGoogle(dto: GoogleUser) {
     try {
       const exUser = await this.prisma.user.findUnique({
@@ -69,7 +97,9 @@ export class AuthServices {
 
       let user: User;
       if (!exUser) {
-        user = await this.prisma.user.create({ data: { ...dto, hash: '' } });
+        user = await this.prisma.user.create({
+          data: { ...dto, hash: '', isRegistered: true },
+        });
       }
 
       const loggedUser = user || exUser;

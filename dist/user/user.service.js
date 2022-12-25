@@ -47,8 +47,8 @@ let UserService = class UserService {
         }
     }
     async updateUserById(id, dto) {
-        const { name, email, password, image } = dto;
-        if (!name && !email && !password && !image)
+        const { name, email, password, image, isRegistered } = dto;
+        if (!dto)
             return {};
         try {
             const user = await this.prisma.user.findUnique({ where: { id } });
@@ -68,15 +68,16 @@ let UserService = class UserService {
             }
             let newHash;
             let passwordMatchs;
-            if (password)
+            if (password) {
                 newHash = await argon.hash(password);
-            if (password)
                 passwordMatchs = await argon.verify(user.hash, password);
+            }
             const updatedUser = await this.prisma.user.update({
                 where: { id },
                 data: {
                     name,
                     email,
+                    isRegistered,
                     image: image ? uploadedImage.secure_url : user.image,
                     hash: passwordMatchs ? user.hash : newHash,
                 },
