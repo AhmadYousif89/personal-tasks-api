@@ -60,7 +60,7 @@ export class AuthController {
   }
 
   @Get('google/login')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.TEMPORARY_REDIRECT)
   async loginWithGoogle(@Res() res: Response) {
     if (this.gUser) {
       const { user, refreshToken } = await this.authServices.loginWithGoogle(

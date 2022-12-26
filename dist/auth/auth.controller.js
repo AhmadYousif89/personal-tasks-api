@@ -108,7 +108,7 @@ __decorate([
 ], AuthController.prototype, "googleRedirect", null);
 __decorate([
     (0, common_1.Get)('google/login'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.HttpCode)(common_1.HttpStatus.TEMPORARY_REDIRECT),
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
