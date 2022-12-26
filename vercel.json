@@ -1,6 +1,5 @@
 {
-  "version": 2,
-  "name": "tasks-api",
+  "name": "taski5y-api",
   "regions": ["fra1"],
   "builds": [
     {

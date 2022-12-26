@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.corsOptions = void 0;
 const VERCEL = process.env.VERCEL_URL;
+console.log(VERCEL);
 const RENDER = process.env.RENDER_URL;
 const DEVELOPMENT = process.env.DEV_URL;
-const allowedOrigins = [DEVELOPMENT, VERCEL, RENDER];
+const allowedOrigins = [DEVELOPMENT, 'https://taski5y.vercel.app', RENDER];
 exports.corsOptions = {
     origin: (origin, cb) => {
         if (allowedOrigins.includes(origin) || !origin) {
