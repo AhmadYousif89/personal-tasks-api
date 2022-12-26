@@ -27,7 +27,7 @@ export class AuthServices {
 
       const { refreshToken } = await this.generateTokens({ id: user.id });
 
-      await this.updateRt(user.id, refreshToken);
+      await this.hashRefreshToken(user.id, refreshToken);
       this.deleteUserHash(user);
       return { user, refreshToken };
     } catch (err) {
@@ -53,7 +53,7 @@ export class AuthServices {
 
       const { refreshToken } = await this.generateTokens({ id: user.id });
 
-      await this.updateRt(user.id, refreshToken);
+      await this.hashRefreshToken(user.id, refreshToken);
       this.deleteUserHash(user);
       return { user, refreshToken };
     } catch (err) {
@@ -103,7 +103,7 @@ export class AuthServices {
       let user: User;
       if (!exUser) {
         user = await this.prisma.user.create({
-          data: { ...gUser, hash: '', isRegistered: true },
+          data: { ...gUser, hash: '', registered: true },
         });
       }
 
@@ -111,7 +111,7 @@ export class AuthServices {
       const userId = loggedUser.id;
       const { refreshToken } = await this.generateTokens({ id: userId });
 
-      await this.updateRt(userId, refreshToken);
+      await this.hashRefreshToken(userId, refreshToken);
       this.deleteUserHash(loggedUser);
       return { user: loggedUser, refreshToken };
     } catch (err) {
@@ -125,13 +125,13 @@ export class AuthServices {
       if (!user)
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       // stored RT was deleted
-      if (!user.rT)
+      if (!user.refresh)
         throw new HttpException(
           'Access denied, Deleted RT',
           HttpStatus.FORBIDDEN,
         );
       // comparing cookie RT with stored RT in DB
-      const isRtValid = await argon.verify(user.rT, jwt);
+      const isRtValid = await argon.verify(user.refresh, jwt);
       if (!isRtValid)
         throw new HttpException(
           'Access denied, Invalid RT',
@@ -171,15 +171,8 @@ export class AuthServices {
       if (!jwt) return res.status(HttpStatus.NO_CONTENT).send();
 
       await this.prisma.user.updateMany({
-        where: {
-          id,
-          rT: {
-            not: null,
-          },
-        },
-        data: {
-          rT: null,
-        },
+        where: { id, refresh: { not: null } },
+        data: { refresh: null },
       });
 
       return res
@@ -195,11 +188,11 @@ export class AuthServices {
     }
   }
 
-  private async updateRt(userId: string, refreshToken: string) {
+  private async hashRefreshToken(userId: string, refreshToken: string) {
     const hashedRt = await argon.hash(refreshToken);
     await this.prisma.user.update({
       where: { id: userId },
-      data: { rT: hashedRt },
+      data: { refresh: hashedRt },
     });
   }
 
@@ -219,6 +212,6 @@ export class AuthServices {
 
   private deleteUserHash(user: User) {
     delete user.hash;
-    delete user.rT;
+    delete user.refresh;
   }
 }

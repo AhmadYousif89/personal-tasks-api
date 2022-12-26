@@ -40,15 +40,17 @@ let AuthController = class AuthController {
     }
     async googleRedirect(req, res) {
         this.gUser = req.user;
-        await this.authServices.googleRedirect(this.gUser, res);
+        return this.authServices.googleRedirect(this.gUser, res);
     }
     async loginWithGoogle(res) {
         if (this.gUser) {
             const { user, refreshToken } = await this.authServices.loginWithGoogle(this.gUser);
             this.attachCookie(res, refreshToken);
-            return res.json(user);
+            return res.status(common_1.HttpStatus.OK).json(user);
         }
-        return res.redirect(`${process.env.NODE_ENV === 'production'
+        return res
+            .status(common_1.HttpStatus.TEMPORARY_REDIRECT)
+            .redirect(`${process.env.NODE_ENV === 'production'
             ? this.config.get('VERCEL_URL') || this.config.get('RENDER_URL')
             : this.config.get('DEV_URL')}`);
     }
@@ -99,7 +101,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('google/callback'),
     (0, common_1.UseGuards)(guards_1.GoogleAuthGuard),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.HttpCode)(common_1.HttpStatus.TEMPORARY_REDIRECT),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -108,7 +110,6 @@ __decorate([
 ], AuthController.prototype, "googleRedirect", null);
 __decorate([
     (0, common_1.Get)('google/login'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.TEMPORARY_REDIRECT),
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

@@ -26,7 +26,7 @@ export class TaskService {
   async getAllTasks(userId: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
-      if (user && !user.rT)
+      if (user && !user.refresh)
         throw new HttpException(
           'Access denied, Deleted RT',
           HttpStatus.FORBIDDEN,

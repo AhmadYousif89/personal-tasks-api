@@ -3,5 +3,5 @@ export declare class EditUserDto {
     email?: string;
     password?: string;
     image?: string;
-    isRegistered?: boolean;
+    registered?: boolean;
 }

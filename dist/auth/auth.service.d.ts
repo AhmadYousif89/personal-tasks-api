@@ -30,7 +30,7 @@ export declare class AuthServices {
         message: string;
     }>;
     logout(id: string, jwt: string, res: Response): Promise<Response<any, Record<string, any>>>;
-    private updateRt;
+    private hashRefreshToken;
     private generateTokens;
     private deleteUserHash;
 }

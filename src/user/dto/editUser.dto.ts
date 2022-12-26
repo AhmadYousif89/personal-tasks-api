@@ -16,5 +16,5 @@ export class EditUserDto {
   image?: string;
   @IsOptional()
   @IsBoolean()
-  isRegistered?: boolean;
+  registered?: boolean;
 }

@@ -12,13 +12,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email        String  @unique
-  name         String
-  hash         String
-  isRegistered Boolean @default(false)
-  provider     String? @default("No_Provider")
-  image        String?
-  rT           String?
+  email      String  @unique
+  name       String
+  hash       String
+  registered Boolean @default(false)
+  provider   String? @default("No_Provider")
+  image      String?
+  refresh    String?
 
   tasks Task[]
 

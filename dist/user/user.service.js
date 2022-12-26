@@ -37,7 +37,7 @@ let UserService = class UserService {
             const user = await this.prisma.user.findUnique({ where: { id } });
             if (!user)
                 throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
-            if (user && !user.rT)
+            if (user && !user.refresh)
                 throw new common_1.HttpException('Access denied, Deleted RT', common_1.HttpStatus.FORBIDDEN);
             this.deleteUserHash(user);
             return user;
@@ -47,7 +47,7 @@ let UserService = class UserService {
         }
     }
     async updateUserById(id, dto) {
-        const { name, email, password, image, isRegistered } = dto;
+        const { name, email, password, image, registered } = dto;
         if (!dto)
             return {};
         try {
@@ -63,7 +63,7 @@ let UserService = class UserService {
                 uploadedImage = await cloudinary_1.default.uploader.upload(image, {
                     overwrite: true,
                     public_id: imgFlag,
-                    upload_preset: 'Personal_Tasks',
+                    upload_preset: 'Taskify-app',
                 });
             }
             let newHash;
@@ -77,7 +77,7 @@ let UserService = class UserService {
                 data: {
                     name,
                     email,
-                    isRegistered,
+                    registered,
                     image: image ? uploadedImage.secure_url : user.image,
                     hash: passwordMatchs ? user.hash : newHash,
                 },
@@ -103,7 +103,7 @@ let UserService = class UserService {
     }
     deleteUserHash(user) {
         delete user.hash;
-        delete user.rT;
+        delete user.refresh;
     }
 };
 UserService = __decorate([

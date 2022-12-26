@@ -28,7 +28,7 @@ let AuthServices = class AuthServices {
             const data = { name, email, hash };
             const user = await this.prisma.user.create({ data });
             const { refreshToken } = await this.generateTokens({ id: user.id });
-            await this.updateRt(user.id, refreshToken);
+            await this.hashRefreshToken(user.id, refreshToken);
             this.deleteUserHash(user);
             return { user, refreshToken };
         }
@@ -47,7 +47,7 @@ let AuthServices = class AuthServices {
                 throw new common_1.HttpException('Invalid credentials', common_1.HttpStatus.UNAUTHORIZED);
             }
             const { refreshToken } = await this.generateTokens({ id: user.id });
-            await this.updateRt(user.id, refreshToken);
+            await this.hashRefreshToken(user.id, refreshToken);
             this.deleteUserHash(user);
             return { user, refreshToken };
         }
@@ -86,13 +86,13 @@ let AuthServices = class AuthServices {
             let user;
             if (!exUser) {
                 user = await this.prisma.user.create({
-                    data: Object.assign(Object.assign({}, gUser), { hash: '', isRegistered: true }),
+                    data: Object.assign(Object.assign({}, gUser), { hash: '', registered: true }),
                 });
             }
             const loggedUser = user || exUser;
             const userId = loggedUser.id;
             const { refreshToken } = await this.generateTokens({ id: userId });
-            await this.updateRt(userId, refreshToken);
+            await this.hashRefreshToken(userId, refreshToken);
             this.deleteUserHash(loggedUser);
             return { user: loggedUser, refreshToken };
         }
@@ -105,9 +105,9 @@ let AuthServices = class AuthServices {
             const user = await this.prisma.user.findUnique({ where: { id } });
             if (!user)
                 throw new common_1.HttpException('User not found', common_1.HttpStatus.NOT_FOUND);
-            if (!user.rT)
+            if (!user.refresh)
                 throw new common_1.HttpException('Access denied, Deleted RT', common_1.HttpStatus.FORBIDDEN);
-            const isRtValid = await argon.verify(user.rT, jwt);
+            const isRtValid = await argon.verify(user.refresh, jwt);
             if (!isRtValid)
                 throw new common_1.HttpException('Access denied, Invalid RT', common_1.HttpStatus.FORBIDDEN);
             const { accessToken } = await this.generateTokens({ id: user.id });
@@ -139,15 +139,8 @@ let AuthServices = class AuthServices {
             if (!jwt)
                 return res.status(common_1.HttpStatus.NO_CONTENT).send();
             await this.prisma.user.updateMany({
-                where: {
-                    id,
-                    rT: {
-                        not: null,
-                    },
-                },
-                data: {
-                    rT: null,
-                },
+                where: { id, refresh: { not: null } },
+                data: { refresh: null },
             });
             return res
                 .clearCookie('jwt', {
@@ -162,11 +155,11 @@ let AuthServices = class AuthServices {
             throw err;
         }
     }
-    async updateRt(userId, refreshToken) {
+    async hashRefreshToken(userId, refreshToken) {
         const hashedRt = await argon.hash(refreshToken);
         await this.prisma.user.update({
             where: { id: userId },
-            data: { rT: hashedRt },
+            data: { refresh: hashedRt },
         });
     }
     async generateTokens(id) {
@@ -184,7 +177,7 @@ let AuthServices = class AuthServices {
     }
     deleteUserHash(user) {
         delete user.hash;
-        delete user.rT;
+        delete user.refresh;
     }
 };
 AuthServices = __decorate([

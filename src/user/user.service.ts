@@ -33,7 +33,7 @@ export class UserService {
 
       if (!user)
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      if (user && !user.rT)
+      if (user && !user.refresh)
         throw new HttpException(
           'Access denied, Deleted RT',
           HttpStatus.FORBIDDEN,
@@ -47,7 +47,7 @@ export class UserService {
   }
 
   async updateUserById(id: string, dto: EditUserDto) {
-    const { name, email, password, image, isRegistered } = dto;
+    const { name, email, password, image, registered } = dto;
     if (!dto) return {};
 
     try {
@@ -66,7 +66,7 @@ export class UserService {
         uploadedImage = await cloudinary.uploader.upload(image, {
           overwrite: true,
           public_id: imgFlag,
-          upload_preset: 'Personal_Tasks',
+          upload_preset: 'Taskify-app',
         });
       }
 
@@ -82,7 +82,7 @@ export class UserService {
         data: {
           name,
           email,
-          isRegistered,
+          registered,
           image: image ? uploadedImage.secure_url : user.image,
           hash: passwordMatchs ? user.hash : newHash,
         },
@@ -111,6 +111,6 @@ export class UserService {
 
   private deleteUserHash(user: User) {
     delete user.hash;
-    delete user.rT;
+    delete user.refresh;
   }
 }
