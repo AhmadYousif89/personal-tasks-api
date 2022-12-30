@@ -65,14 +65,14 @@ let AuthServices = class AuthServices {
             }
             if (user) {
                 return res.redirect(`${process.env.NODE_ENV === 'production'
-                    ? this.config.get('REDIRECT_VERCEL_GOOGLE_CHECK') ||
-                        this.config.get('REDIRECT_RENDER_GOOGLE_CHECK')
-                    : this.config.get('REDIRECT_DEV_GOOGLE_CHECK')}`);
+                    ? this.config.get('REDIRECT_VERCEL_GOOGLE_SIGNIN') ||
+                        this.config.get('REDIRECT_RENDER_GOOGLE_SIGNIN')
+                    : this.config.get('REDIRECT_DEV_GOOGLE_SIGNIN')}`);
             }
             return res.redirect(`${process.env.NODE_ENV === 'production'
-                ? this.config.get('REDIRECT_VERCEL_GOOGLE_LOGIN') ||
-                    this.config.get('REDIRECT_RENDER_GOOGLE_LOGIN')
-                : this.config.get('REDIRECT_DEV_GOOGLE_LOGIN')}`);
+                ? this.config.get('REDIRECT_VERCEL_GOOGLE_SIGNUP') ||
+                    this.config.get('REDIRECT_RENDER_GOOGLE_SIGNUP')
+                : this.config.get('REDIRECT_DEV_GOOGLE_SIGNUP')}`);
         }
         catch (err) {
             throw err;
