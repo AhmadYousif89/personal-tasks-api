@@ -41,7 +41,7 @@ let AuthServices = class AuthServices {
             const { email, password } = dto;
             const user = await this.prisma.user.findUnique({ where: { email } });
             if (user && !user.hash)
-                throw new common_1.HttpException(`Unauthorized google user`, common_1.HttpStatus.UNAUTHORIZED);
+                throw new common_1.HttpException(`account doesn't exist | try to sign in with google`, common_1.HttpStatus.UNAUTHORIZED);
             const isPwValid = await argon.verify(user.hash, password);
             if (!isPwValid) {
                 throw new common_1.HttpException('Invalid credentials', common_1.HttpStatus.UNAUTHORIZED);

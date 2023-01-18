@@ -42,7 +42,7 @@ export class AuthServices {
 
       if (user && !user.hash)
         throw new HttpException(
-          `Unauthorized google user`,
+          `account doesn't exist | try to sign in with google`,
           HttpStatus.UNAUTHORIZED,
         );
 
