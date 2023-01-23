@@ -3,4 +3,5 @@ export declare class EditTaskDto {
     details: string;
     status: 'Todo' | 'InProgress' | 'Completed';
     priority: 'Normal' | 'High';
+    isExpired: boolean;
 }

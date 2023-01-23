@@ -33,5 +33,10 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], EditTaskDto.prototype, "priority", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], EditTaskDto.prototype, "isExpired", void 0);
 exports.EditTaskDto = EditTaskDto;
 //# sourceMappingURL=editTask.dto.js.map

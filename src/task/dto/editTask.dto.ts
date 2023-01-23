@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class EditTaskDto {
   @IsString()
@@ -16,4 +16,8 @@ export class EditTaskDto {
   @IsString()
   @IsOptional()
   priority: 'Normal' | 'High';
+
+  @IsBoolean()
+  @IsOptional()
+  isExpired: boolean;
 }

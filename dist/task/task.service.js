@@ -25,6 +25,7 @@ let TaskService = class TaskService {
                     details: dto.details.trim(),
                     status: dto.status,
                     priority: dto.priority,
+                    expireDate: dto.expireDate,
                 },
             });
             return task;

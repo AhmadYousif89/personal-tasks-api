@@ -1,4 +1,5 @@
 import {
+  Res,
   Get,
   Post,
   Body,
@@ -9,6 +10,7 @@ import {
   HttpStatus,
   Controller,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { GetUserId, Protected } from '../common/decorators';
 import { EditTaskDto, TaskDto } from './dto';
 import { TaskService } from './task.service';
@@ -20,8 +22,13 @@ export class TaskController {
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  createTask(@GetUserId() id: string, @Body() dto: TaskDto) {
-    return this.taskService.createTask(id, dto);
+  async createTask(
+    @Res() res: Response,
+    @GetUserId() id: string,
+    @Body() dto: TaskDto,
+  ) {
+    const task = await this.taskService.createTask(id, dto);
+    return res.json(task);
   }
 
   @Get('')

@@ -21,8 +21,9 @@ let TaskController = class TaskController {
     constructor(taskService) {
         this.taskService = taskService;
     }
-    createTask(id, dto) {
-        return this.taskService.createTask(id, dto);
+    async createTask(res, id, dto) {
+        const task = await this.taskService.createTask(id, dto);
+        return res.json(task);
     }
     getAllTasks(id) {
         return this.taskService.getAllTasks(id);
@@ -40,11 +41,12 @@ let TaskController = class TaskController {
 __decorate([
     (0, common_1.Post)(''),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-    __param(0, (0, decorators_1.GetUserId)()),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, decorators_1.GetUserId)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, dto_1.TaskDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, String, dto_1.TaskDto]),
+    __metadata("design:returntype", Promise)
 ], TaskController.prototype, "createTask", null);
 __decorate([
     (0, common_1.Get)(''),

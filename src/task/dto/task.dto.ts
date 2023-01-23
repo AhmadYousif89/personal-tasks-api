@@ -16,4 +16,8 @@ export class TaskDto {
   @IsString()
   @IsOptional()
   priority: 'Normal' | 'High';
+
+  @IsString()
+  @IsNotEmpty()
+  expireDate: string;
 }
