@@ -64,7 +64,6 @@ let TaskService = class TaskService {
         }
     }
     async updateTaskById(userId, taskId, dto) {
-        console.log({ dto });
         try {
             const task = await this.prisma.task.findUnique({
                 where: { id: taskId },
