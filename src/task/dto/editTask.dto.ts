@@ -20,4 +20,8 @@ export class EditTaskDto {
   @IsBoolean()
   @IsOptional()
   isExpired: boolean;
+
+  @IsString()
+  @IsOptional()
+  expireDate: string;
 }

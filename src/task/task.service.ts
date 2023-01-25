@@ -60,6 +60,7 @@ export class TaskService {
   }
 
   async updateTaskById(userId: string, taskId: string, dto: EditTaskDto) {
+    console.log({ dto });
     try {
       const task = await this.prisma.task.findUnique({
         where: { id: taskId },
