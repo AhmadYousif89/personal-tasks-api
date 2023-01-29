@@ -37,12 +37,15 @@ let TaskController = class TaskController {
     deleteTaskById(id, taskId) {
         return this.taskService.deleteTaskById(id, taskId);
     }
+    deleteAllTasks(id) {
+        return this.taskService.deleteActiveTasks(id);
+    }
 };
 __decorate([
     (0, common_1.Post)(''),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     __param(0, (0, common_1.Res)()),
-    __param(1, (0, decorators_1.GetUserId)()),
+    __param(1, (0, decorators_1.GetUser)('id')),
     __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String, dto_1.TaskDto]),
@@ -51,7 +54,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)(''),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, decorators_1.GetUserId)()),
+    __param(0, (0, decorators_1.GetUser)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
@@ -59,7 +62,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, decorators_1.GetUserId)()),
+    __param(0, (0, decorators_1.GetUser)('id')),
     __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
@@ -68,7 +71,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, decorators_1.GetUserId)()),
+    __param(0, (0, decorators_1.GetUser)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -78,12 +81,20 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(0, (0, decorators_1.GetUserId)()),
+    __param(0, (0, decorators_1.GetUser)('id')),
     __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], TaskController.prototype, "deleteTaskById", null);
+__decorate([
+    (0, common_1.Delete)(''),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, decorators_1.GetUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TaskController.prototype, "deleteAllTasks", null);
 TaskController = __decorate([
     (0, decorators_1.Protected)(),
     (0, common_1.Controller)('tasks'),

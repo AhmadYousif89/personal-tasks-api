@@ -15,7 +15,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./getUser.decorator"), exports);
-__exportStar(require("./getUserId.decorator"), exports);
 __exportStar(require("./protect.decorator"), exports);
 __exportStar(require("./getCookies.decorator"), exports);
 //# sourceMappingURL=index.js.map

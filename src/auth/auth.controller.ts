@@ -16,7 +16,7 @@ import { GoogleUser } from './types';
 import { AuthServices } from './auth.service';
 import { AuthLoginDto, AuthRegisterDto } from './dto';
 import { GoogleAuthGuard, RtAuthGuard } from './../common/guards';
-import { Cookies, GetUserId, Protected } from './../common/decorators';
+import { Cookies, GetUser, Protected } from './../common/decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -82,7 +82,7 @@ export class AuthController {
   @Get('refresh')
   @UseGuards(RtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@GetUserId() id: string, @Cookies('jwt') jwt: string) {
+  async refreshToken(@GetUser('id') id: string, @Cookies('jwt') jwt: string) {
     return this.authServices.refreshToken(id, jwt);
   }
 
@@ -96,7 +96,7 @@ export class AuthController {
   @Post('logout')
   async logout(
     @Res() res: Response,
-    @GetUserId() id: string,
+    @GetUser('id') id: string,
     @Cookies('jwt') jwt: string,
   ) {
     await this.authServices.logout(id, jwt, res);

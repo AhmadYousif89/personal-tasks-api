@@ -8,7 +8,7 @@ import {
   Controller,
 } from '@nestjs/common';
 
-import { GetUserId, Protected } from './../common/decorators';
+import { GetUser, Protected } from './../common/decorators';
 import { UserService } from './user.service';
 import { EditUserDto } from './dto';
 
@@ -25,21 +25,21 @@ export class UserController {
   @Protected()
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  getUserById(@GetUserId() id: string) {
+  getUserById(@GetUser('id') id: string) {
     return this.userService.getUserById(id);
   }
 
   @Protected()
   @Patch('me')
   @HttpCode(HttpStatus.OK)
-  updateUserById(@GetUserId() id: string, @Body() dto: EditUserDto) {
+  updateUserById(@GetUser('id') id: string, @Body() dto: EditUserDto) {
     return this.userService.updateUserById(id, dto);
   }
 
   @Protected()
   @Delete('me')
   @HttpCode(HttpStatus.OK)
-  deleteUserById(@GetUserId() id: string) {
+  deleteUserById(@GetUser('id') id: string) {
     return this.userService.deleteUserById(id);
   }
 }

@@ -12,4 +12,7 @@ export declare class TaskController {
         id: string;
         message: string;
     }>;
+    deleteAllTasks(id: string): Promise<{
+        message: string;
+    }>;
 }

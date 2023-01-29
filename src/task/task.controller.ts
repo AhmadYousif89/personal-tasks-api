@@ -11,7 +11,7 @@ import {
   Controller,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { GetUserId, Protected } from '../common/decorators';
+import { GetUser, Protected } from '../common/decorators';
 import { EditTaskDto, TaskDto } from './dto';
 import { TaskService } from './task.service';
 
@@ -24,7 +24,7 @@ export class TaskController {
   @HttpCode(HttpStatus.CREATED)
   async createTask(
     @Res() res: Response,
-    @GetUserId() id: string,
+    @GetUser('id') id: string,
     @Body() dto: TaskDto,
   ) {
     const task = await this.taskService.createTask(id, dto);
@@ -33,20 +33,20 @@ export class TaskController {
 
   @Get('')
   @HttpCode(HttpStatus.OK)
-  getAllTasks(@GetUserId() id: string) {
+  getAllTasks(@GetUser('id') id: string) {
     return this.taskService.getAllTasks(id);
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  getTaskById(@GetUserId() id: string, @Param('id') taskId: string) {
+  getTaskById(@GetUser('id') id: string, @Param('id') taskId: string) {
     return this.taskService.getTaskById(id, taskId);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   updateTaskById(
-    @GetUserId() id: string,
+    @GetUser('id') id: string,
     @Body() dto: EditTaskDto,
     @Param('id') taskId: string,
   ) {
@@ -55,7 +55,13 @@ export class TaskController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  deleteTaskById(@GetUserId() id: string, @Param('id') taskId: string) {
+  deleteTaskById(@GetUser('id') id: string, @Param('id') taskId: string) {
     return this.taskService.deleteTaskById(id, taskId);
+  }
+
+  @Delete('')
+  @HttpCode(HttpStatus.OK)
+  deleteAllTasks(@GetUser('id') id: string) {
+    return this.taskService.deleteActiveTasks(id);
   }
 }

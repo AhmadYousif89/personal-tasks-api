@@ -11,4 +11,7 @@ export declare class TaskService {
         id: string;
         message: string;
     }>;
+    deleteActiveTasks(userId: string): Promise<{
+        message: string;
+    }>;
 }
