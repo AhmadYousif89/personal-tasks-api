@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Controller,
+  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { GetUser, Protected } from '../common/decorators';
@@ -61,7 +62,7 @@ export class TaskController {
 
   @Delete('')
   @HttpCode(HttpStatus.OK)
-  deleteAllTasks(@GetUser('id') id: string) {
-    return this.taskService.deleteActiveTasks(id);
+  deleteAllTasks(@GetUser('id') id: string, @Query('status') status: string) {
+    return this.taskService.deleteActiveTasks(id, status);
   }
 }

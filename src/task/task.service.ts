@@ -126,7 +126,7 @@ export class TaskService {
     }
   }
 
-  async deleteActiveTasks(userId: string) {
+  async deleteActiveTasks(userId: string, status: string) {
     try {
       if (!userId) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -137,11 +137,17 @@ export class TaskService {
         throw new HttpException('No tasks were found', HttpStatus.NOT_FOUND);
       }
 
-      await this.prisma.task.deleteMany({
-        where: { userId, status: { not: 'Completed' } },
+      const { count } = await this.prisma.task.deleteMany({
+        where: {
+          userId,
+          status:
+            status === 'completed'
+              ? { equals: 'Completed' }
+              : { not: 'Completed' },
+        },
       });
 
-      return { message: 'All tasks have been deleted' };
+      return { count, message: 'All tasks have been deleted' };
     } catch (err) {
       throw err;
     }
