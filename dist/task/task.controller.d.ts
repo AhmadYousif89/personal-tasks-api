@@ -14,6 +14,7 @@ export declare class TaskController {
     }>;
     deleteAllTasks(id: string, status: string): Promise<{
         count: number;
+        status: string;
         message: string;
     }>;
 }

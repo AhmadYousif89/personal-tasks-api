@@ -38,7 +38,7 @@ let TaskController = class TaskController {
         return this.taskService.deleteTaskById(id, taskId);
     }
     deleteAllTasks(id, status) {
-        return this.taskService.deleteActiveTasks(id, status);
+        return this.taskService.deleteAllTasks(id, status);
     }
 };
 __decorate([

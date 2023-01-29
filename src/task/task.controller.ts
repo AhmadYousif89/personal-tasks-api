@@ -63,6 +63,6 @@ export class TaskController {
   @Delete('')
   @HttpCode(HttpStatus.OK)
   deleteAllTasks(@GetUser('id') id: string, @Query('status') status: string) {
-    return this.taskService.deleteActiveTasks(id, status);
+    return this.taskService.deleteAllTasks(id, status);
   }
 }
