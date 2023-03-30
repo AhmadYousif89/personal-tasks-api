@@ -17,6 +17,7 @@ let TaskService = class TaskService {
         this.prisma = prisma;
     }
     async createTask(userId, dto) {
+        var _a;
         try {
             const task = await this.prisma.task.create({
                 data: {
@@ -25,7 +26,7 @@ let TaskService = class TaskService {
                     details: dto.details.trim(),
                     status: dto.status,
                     priority: dto.priority,
-                    expireDate: dto.expireDate,
+                    expireDate: (_a = dto.expireDate) !== null && _a !== void 0 ? _a : '',
                 },
             });
             return task;
